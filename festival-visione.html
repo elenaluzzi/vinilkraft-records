@@ -235,9 +235,10 @@
     }
 
     .about-text p {
-      color: #999;
-      font-size: 1.05rem;
-      line-height: 1.8;
+      color: #ddd;
+      font-size: 1.25rem;
+      font-weight: 400;
+      line-height: 2;
       margin-bottom: 20px;
     }
 
@@ -395,6 +396,549 @@
       text-decoration: none;
     }
 
+    .nav-login {
+      padding: 10px 25px;
+      background: transparent;
+      color: #ff6a00;
+      border: 1px solid #ff6a00;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .nav-login:hover {
+      background: #ff6a00;
+      color: #0a0a14;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: #12121e;
+      border: 1px solid rgba(255, 106, 0, 0.2);
+      padding: 50px 40px;
+      width: 420px;
+      max-width: 90vw;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 1.8rem;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .modal-close:hover { color: #ff6a00; }
+
+    .modal h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .modal h2 span { color: #ff6a00; }
+
+    .modal-subtitle {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 30px;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-size: 0.95rem;
+      font-family: 'Space Grotesk', sans-serif;
+      margin-bottom: 15px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .modal-input:focus { border-color: #ff6a00; }
+
+    .modal-input::placeholder { color: #555; }
+
+    .modal-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #ff6a00, #ff2d00);
+      color: #fff;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      margin-top: 5px;
+      transition: box-shadow 0.3s;
+    }
+
+    .modal-btn:hover { box-shadow: 0 0 40px rgba(255, 106, 0, 0.4); }
+
+    .modal-switch {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+      font-size: 0.85rem;
+    }
+
+    .modal-switch a {
+      color: #ff6a00;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .modal-error {
+      color: #ff4444;
+      font-size: 0.8rem;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .dashboard {
+      display: none;
+    }
+
+    .dashboard.active { display: block; }
+
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 900px;
+      margin: 0 auto 50px;
+    }
+
+    .dash-user {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .dash-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff6a00, #ff2d00);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .dash-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .dash-email {
+      color: #666;
+      font-size: 0.85rem;
+    }
+
+    .dash-logout {
+      padding: 10px 20px;
+      background: transparent;
+      color: #ff6a00;
+      border: 1px solid #ff6a00;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: all 0.3s;
+    }
+
+    .dash-logout:hover {
+      background: #ff6a00;
+      color: #0a0a14;
+    }
+
+    .dash-tickets-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 30px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .dash-tickets-title span { color: #ff6a00; }
+
+    .dash-empty {
+      text-align: center;
+      color: #555;
+      padding: 60px 0;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .dash-empty p {
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+    }
+
+    .dash-ticket-list {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .dash-ticket-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 25px 30px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 106, 0, 0.15);
+      margin-bottom: 15px;
+      transition: border-color 0.3s;
+    }
+
+    .dash-ticket-item:hover { border-color: #ff6a00; }
+
+    .dash-ticket-type {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .dash-ticket-date {
+      color: #888;
+      font-size: 0.85rem;
+      margin-top: 5px;
+    }
+
+    .dash-ticket-code {
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #ff6a00;
+      letter-spacing: 2px;
+    }
+
+    .dash-ticket-status {
+      padding: 5px 14px;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: 1px solid rgba(0, 255, 100, 0.3);
+      color: #00ff64;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #12121e;
+      border: 1px solid #ff6a00;
+      padding: 18px 30px;
+      z-index: 200;
+      display: none;
+      animation: slideUp 0.4s ease;
+    }
+
+    .toast.show { display: block; }
+
+    .toast p {
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
+    .toast span { color: #ff6a00; }
+
+    .audio-player {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 30px;
+      background: linear-gradient(transparent, rgba(10, 10, 20, 0.98));
+      z-index: 2;
+    }
+
+    .audio-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .audio-file-name {
+      font-size: 0.8rem;
+      color: #999;
+      letter-spacing: 1px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 200px;
+    }
+
+    .audio-status {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #ff6a00;
+    }
+
+    .audio-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .audio-btn {
+      min-width: 90px;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #ff6a00, #ff2d00);
+      color: #fff;
+      border: none;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+
+    .audio-btn:hover { box-shadow: 0 0 30px rgba(255, 106, 0, 0.4); transform: scale(1.03); }
+
+    .audio-upload-btn {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 15px;
+      background: transparent;
+      color: #ff6a00;
+      border: 1px solid #ff6a00;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: background 0.3s;
+    }
+
+    .audio-upload-btn:hover { background: rgba(255, 106, 0, 0.1); }
+
+    .audio-visualizer {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 60px;
+      margin-top: 15px;
+    }
+
+    .audio-bar {
+      flex: 1;
+      background: linear-gradient(180deg, #ff6a00, #ff2d00);
+      height: 5%;
+      min-height: 3px;
+      transition: height 0.08s ease;
+      opacity: 0.9;
+    }
+
+    .nav-audio-li {
+      display: flex;
+      align-items: center;
+    }
+
+    .flower-card {
+      position: relative;
+      height: 550px;
+      border: 1px solid rgba(255, 106, 0, 0.2);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.4s;
+      grid-column: 1 / -1;
+    }
+
+    .flower-card:hover { border-color: #ff6a00; }
+
+    .flower-3d {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .flower-3d canvas { display: block; }
+
+    .flower-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 30px;
+      background: linear-gradient(transparent, rgba(10, 10, 20, 0.95));
+      z-index: 2;
+      text-align: center;
+    }
+
+    .flower-overlay h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .flower-overlay p {
+      color: #888;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .flower-tip {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #ff6a00;
+    }
+
+    .nerual-card {
+      position: relative;
+      height: 550px;
+      border: 1px solid rgba(255, 106, 0, 0.2);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.4s;
+      grid-column: 1 / -1;
+    }
+
+    .nerual-card:hover { border-color: #ff6a00; }
+
+    .neur-video-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: #0a0a14;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .neur-video-wrap video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: invert(1) hue-rotate(90deg);
+      opacity: 0.85;
+    }
+
+    .neur-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    .neur-placeholder {
+      text-align: center;
+      color: #777;
+      z-index: 2;
+    }
+
+    .neur-placeholder .big {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      color: #ff6a00;
+      margin-bottom: 15px;
+    }
+
+    .neur-placeholder p { font-size: 0.9rem; line-height: 1.6; }
+
+    .neur-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 26px 30px;
+      background: linear-gradient(transparent, rgba(10, 10, 20, 0.97));
+      z-index: 3;
+      text-align: center;
+    }
+
+    .neur-overlay h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.35rem;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .neur-overlay p {
+      color: #888;
+      font-size: 0.85rem;
+      margin-bottom: 15px;
+    }
+
+    .neur-btn {
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #ff6a00, #ff2d00);
+      color: #fff;
+      border: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: box-shadow 0.3s;
+    }
+
+    .neur-btn:hover { box-shadow: 0 0 30px rgba(255, 106, 0, 0.4); }
+
+    .neur-status {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #ff6a00;
+      margin-top: 10px;
+      min-height: 14px;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
     @media (max-width: 768px) {
       nav { padding: 15px 20px; }
       nav ul { display: none; }
@@ -402,6 +946,7 @@
       .section { padding: 80px 20px; }
       .about-grid { grid-template-columns: 1fr; gap: 40px; }
       .artist-name { font-size: 1.2rem; }
+      .dash-header { flex-direction: column; gap: 20px; text-align: center; }
     }
   </style>
 </head>
@@ -414,6 +959,8 @@
       <li><a href="#info">Info</a></li>
       <li><a href="#visual">Visual</a></li>
       <li><a href="#biglietti">Biglietti</a></li>
+      <li id="nav-login-li"><a class="nav-login" onclick="openModal('login')">Login</a></li>
+      <li id="nav-user-li" style="display:none;"><a class="nav-login" href="#dashboard" style="background:#ff6a00;color:#0a0a14;" id="nav-user-name">Account</a></li>
     </ul>
   </nav>
 
@@ -525,18 +1072,42 @@
           <p>Pareti LED reattive al suono che trasformano la musica in geometrie luminose.</p>
         </div>
       </div>
-      <div class="vis-card">
-        <div class="vis-bg" style="background: linear-gradient(135deg, #2d0a00 0%, #ff2d00 100%);"></div>
-        <div class="vis-card-inner">
+      <div class="flower-card" id="flower-card">
+        <div class="flower-3d" id="flower-3d"></div>
+        <div class="flower-overlay">
           <h3>Generative Dreams</h3>
-          <p>Proiezioni generative create in tempo reale con algoritmi e dati audio live.</p>
+          <p>Un fiore generativo 3D che reagisce al suono. Carica un brano e osserva i petali vibrare con la musica.</p>
+          <div class="audio-controls" style="justify-content:center;max-width:400px;margin:0 auto;">
+            <button class="audio-btn" id="audio-toggle-3d" onclick="toggleAudio3D()">Play</button>
+            <label class="audio-upload-btn" style="flex:none;width:180px;" for="audio-file-input-3d">
+              <span id="audio-upload-label-3d">Carica Brano</span>
+            </label>
+            <input type="file" id="audio-file-input-3d" accept="audio/*" style="display:none;" onchange="loadAudioFile3D(event)">
+          </div>
+          <div class="flower-tip" id="audio-status-3d" style="margin-top:12px;">Carica un brano o premi Play</div>
         </div>
       </div>
-      <div class="vis-card">
-        <div class="vis-bg" style="background: linear-gradient(135deg, #0a0a14 0%, #ff6a00 100%);"></div>
-        <div class="vis-card-inner">
+      <div class="nerual-card">
+        <div class="neur-video-wrap" id="neur-video-wrap">
+          <video id="neur-video" playsinline muted></video>
+          <div class="neur-placeholder" id="neur-placeholder">
+            <div class="big">Neural Frequencies</div>
+            <p>Installa interattiva: attiva la webcam per rilevare<br>la posa del corpo e delle mani in tempo reale.</p>
+          </div>
+          <canvas class="neur-canvas" id="neur-canvas"></canvas>
+        </div>
+        <div class="neur-overlay">
           <h3>Neural Frequencies</h3>
-          <p>Installazione interattiva dove i movimenti del pubblico generano pattern sonori e visivi.</p>
+          <p>Il tuo corpo diventa un flusso neurale di punti e linee che reagisce alla musica.</p>
+          <button class="neur-btn" id="neur-start" onclick="startNeural()">Attiva Webcam</button>
+          <div class="neur-status" id="neur-status">In attesa di attivazione</div>
+          <div class="audio-controls" style="justify-content:center;max-width:400px;margin:12px auto 0;">
+            <button class="audio-btn" id="neur-audio-toggle" onclick="toggleNeuralAudio()">Play</button>
+            <label class="audio-upload-btn" style="flex:none;width:180px;" for="neur-audio-input">
+              <span id="neur-audio-label">Carica Brano</span>
+            </label>
+            <input type="file" id="neur-audio-input" accept="audio/*" style="display:none;" onchange="loadNeuralAudio(event)">
+          </div>
         </div>
       </div>
     </div>
@@ -555,7 +1126,7 @@
             <li>Tutti gli stage</li>
             <li>Installazioni incluse</li>
           </ul>
-          <a href="#" class="btn">Seleziona</a>
+          <button class="btn" onclick="buyTicket('1 Giorno', 45)">Seleziona</button>
         </div>
         <div class="ticket featured">
           <div class="ticket-label">3 Giorni</div>
@@ -566,7 +1137,7 @@
             <li>Installazioni incluse</li>
             <li>Goodie bag esclusiva</li>
           </ul>
-          <a href="#" class="btn btn-fill">Acquista</a>
+          <button class="btn btn-fill" onclick="buyTicket('3 Giorni', 99)">Acquista</button>
         </div>
         <div class="ticket">
           <div class="ticket-label">VIP</div>
@@ -577,7 +1148,7 @@
             <li>Meet & Greet artisti</li>
             <li>Open bar</li>
           </ul>
-          <a href="#" class="btn">Seleziona</a>
+          <button class="btn" onclick="buyTicket('VIP', 179)">Seleziona</button>
         </div>
       </div>
     </div>
@@ -587,9 +1158,704 @@
     &copy; 2026 VISION FEST / Milano / Tutti i diritti riservati / <a href="#">Instagram</a> / <a href="#">Twitter</a>
   </footer>
 
+  <!-- LOGIN / REGISTER MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+
+      <div id="modal-login">
+        <h2>Accedi</h2>
+        <p class="modal-subtitle">Accedi al tuo account per acquistare i biglietti</p>
+        <p class="modal-error" id="login-error">Credenziali non valide</p>
+        <input class="modal-input" type="email" id="login-email" placeholder="Email">
+        <input class="modal-input" type="password" id="login-pass" placeholder="Password">
+        <button class="modal-btn" onclick="doLogin()">Accedi</button>
+        <p class="modal-switch">Non hai un account? <a onclick="switchModal('register')">Registrati</a></p>
+      </div>
+
+      <div id="modal-register" style="display:none;">
+        <h2>Registrati</h2>
+        <p class="modal-subtitle">Crea il tuo account per accedere al festival</p>
+        <p class="modal-error" id="register-error">Compila tutti i campi</p>
+        <input class="modal-input" type="text" id="reg-name" placeholder="Nome completo">
+        <input class="modal-input" type="email" id="reg-email" placeholder="Email">
+        <input class="modal-input" type="password" id="reg-pass" placeholder="Password (min 4 caratteri)">
+        <button class="modal-btn" onclick="doRegister()">Registrati</button>
+        <p class="modal-switch">Hai già un account? <a onclick="switchModal('login')">Accedi</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <section class="section dashboard" id="dashboard">
+    <div class="section-title">Il Tuo <span>Account</span></div>
+    <div class="section-line"></div>
+
+    <div class="dash-header">
+      <div class="dash-user">
+        <div class="dash-avatar" id="dash-avatar">?</div>
+        <div>
+          <div class="dash-name" id="dash-name">Utente</div>
+          <div class="dash-email" id="dash-email">email@email.com</div>
+        </div>
+      </div>
+      <button class="dash-logout" onclick="doLogout()">Logout</button>
+    </div>
+
+    <div class="dash-tickets-title">I Tuoi <span>Biglietti</span></div>
+
+    <div id="dash-tickets-container">
+      <div class="dash-empty" id="dash-empty">
+        <p>Non hai ancora acquistato nessun biglietto.</p>
+        <a href="#biglietti" class="btn" style="font-size:0.8rem;">Acquista Ora</a>
+      </div>
+      <div class="dash-ticket-list" id="dash-ticket-list"></div>
+    </div>
+  </section>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><p><span id="toast-msg"></span></p></div>
+
   <canvas id="canvas-bg"></canvas>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://unpkg.com/ml5@0.12.2/dist/ml5.min.js"></script>
   <script>
+    let currentUser = JSON.parse(localStorage.getItem('visionfest_user')) || null;
+    let userTickets = JSON.parse(localStorage.getItem('visionfest_tickets')) || [];
+
+    function init() {
+      if (currentUser) {
+        showDashboard();
+      }
+    }
+
+    function openModal(type) {
+      document.getElementById('modal-overlay').classList.add('active');
+      switchModal(type);
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('active');
+      document.getElementById('login-error').style.display = 'none';
+      document.getElementById('register-error').style.display = 'none';
+    }
+
+    function switchModal(type) {
+      document.getElementById('modal-login').style.display = type === 'login' ? 'block' : 'none';
+      document.getElementById('modal-register').style.display = type === 'register' ? 'block' : 'none';
+      document.getElementById('login-error').style.display = 'none';
+      document.getElementById('register-error').style.display = 'none';
+    }
+
+    function doRegister() {
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const pass = document.getElementById('reg-pass').value;
+
+      if (!name || !email || pass.length < 4) {
+        document.getElementById('register-error').style.display = 'block';
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('visionfest_users')) || [];
+      if (users.find(u => u.email === email)) {
+        document.getElementById('register-error').textContent = 'Email già registrata';
+        document.getElementById('register-error').style.display = 'block';
+        return;
+      }
+
+      users.push({ name, email, pass });
+      localStorage.setItem('visionfest_users', JSON.stringify(users));
+
+      currentUser = { name, email };
+      localStorage.setItem('visionfest_user', JSON.stringify(currentUser));
+
+      closeModal();
+      showDashboard();
+      showToast('Account creato! Benvenuto, ' + name);
+    }
+
+    function doLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const pass = document.getElementById('login-pass').value;
+
+      const users = JSON.parse(localStorage.getItem('visionfest_users')) || [];
+      const user = users.find(u => u.email === email && u.pass === pass);
+
+      if (!user) {
+        document.getElementById('login-error').style.display = 'block';
+        return;
+      }
+
+      currentUser = { name: user.name, email: user.email };
+      localStorage.setItem('visionfest_user', JSON.stringify(currentUser));
+
+      closeModal();
+      showDashboard();
+      showToast('Bentornato, ' + user.name + '!');
+    }
+
+    function doLogout() {
+      currentUser = null;
+      localStorage.removeItem('visionfest_user');
+
+      document.getElementById('nav-login-li').style.display = '';
+      document.getElementById('nav-user-li').style.display = 'none';
+      document.getElementById('dashboard').classList.remove('active');
+
+      showToast('Logout effettuato');
+    }
+
+    function showDashboard() {
+      document.getElementById('nav-login-li').style.display = 'none';
+      document.getElementById('nav-user-li').style.display = '';
+      document.getElementById('nav-user-name').textContent = currentUser.name.split(' ')[0];
+
+      document.getElementById('dash-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+      document.getElementById('dash-name').textContent = currentUser.name;
+      document.getElementById('dash-email').textContent = currentUser.email;
+
+      renderTickets();
+    }
+
+    function buyTicket(type, price) {
+      if (!currentUser) {
+        openModal('login');
+        return;
+      }
+
+      const code = 'VF-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+      const ticket = {
+        type,
+        price,
+        code,
+        date: new Date().toLocaleDateString('it-IT'),
+        status: 'Confermato'
+      };
+
+      userTickets.push(ticket);
+      localStorage.setItem('visionfest_tickets', JSON.stringify(userTickets));
+
+      renderTickets();
+      showToast('Biglietto ' + type + ' acquistato! Codice: ' + code);
+      document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderTickets() {
+      const empty = document.getElementById('dash-empty');
+      const list = document.getElementById('dash-ticket-list');
+
+      if (userTickets.length === 0) {
+        empty.style.display = 'block';
+        list.innerHTML = '';
+        return;
+      }
+
+      empty.style.display = 'none';
+      list.innerHTML = userTickets.map(t => `
+        <div class="dash-ticket-item">
+          <div>
+            <div class="dash-ticket-type">${t.type}</div>
+            <div class="dash-ticket-date">Acquistato il ${t.date}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="dash-ticket-code">${t.code}</div>
+            <div class="dash-ticket-status">${t.status}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    document.getElementById('modal-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    init();
+
+    let audioCtx = null;
+    let audioAnalyser = null;
+    let audioSource = null;
+    let audioBuffer = null;
+    let isPlaying = false;
+    let audioFreqData = null;
+    let bgAudioLevel = 0;
+    let avgBass = 0;
+    let avgMid = 0;
+    let avgHigh = 0;
+
+    function initAudio() {
+      if (audioCtx) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      audioAnalyser = audioCtx.createAnalyser();
+      audioAnalyser.fftSize = 512;
+      audioFreqData = new Uint8Array(audioAnalyser.frequencyBinCount);
+      audioAnalyser.connect(audioCtx.destination);
+    }
+
+    function setStatus3D(msg) {
+      const el = document.getElementById('audio-status-3d');
+      if (el) el.textContent = msg;
+    }
+
+    function loadAudioFile3D(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      initAudio();
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        audioCtx.decodeAudioData(e.target.result, function(buffer) {
+          audioBuffer = buffer;
+          document.getElementById('audio-upload-label-3d').textContent = file.name;
+          setStatus3D('Pronto - premi Play');
+        }, function() {
+          alert('Impossibile decodificare il file audio');
+        });
+      };
+      reader.readAsArrayBuffer(file);
+      event.target.value = '';
+    }
+
+    function playAudio() {
+      if (!audioCtx || !audioBuffer) {
+        initAudio();
+        if (!audioBuffer) { setStatus3D('Carica prima un brano'); return; }
+      }
+
+      audioCtx.resume();
+
+      if (audioSource) {
+        audioSource.stop();
+        audioSource.disconnect();
+      }
+
+      audioSource = audioCtx.createBufferSource();
+      audioSource.buffer = audioBuffer;
+      audioSource.loop = true;
+      audioSource.connect(audioAnalyser);
+      audioSource.start(0);
+
+      isPlaying = true;
+      document.getElementById('audio-toggle-3d').textContent = 'Stop';
+      setStatus3D('In Riproduzione');
+    }
+
+    function stopAudio() {
+      if (audioSource) {
+        audioSource.stop();
+        audioSource.disconnect();
+        audioSource = null;
+      }
+      isPlaying = false;
+      document.getElementById('audio-toggle-3d').textContent = 'Play';
+      setStatus3D('Inattivo');
+    }
+
+    function toggleAudio3D() {
+      if (isPlaying) stopAudio();
+      else playAudio();
+    }
+
+    let flowerScene, flowerCamera, flowerRenderer, flowerGroup, bars = [], barMeshes = [];
+
+    function initFlower() {
+      const container = document.getElementById('flower-3d');
+      if (!container) return;
+
+      flowerScene = new THREE.Scene();
+
+      flowerCamera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 2000);
+      flowerCamera.position.set(0, 30, 90);
+
+      flowerRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      flowerRenderer.setSize(container.clientWidth, container.clientHeight);
+      flowerRenderer.setPixelRatio(window.devicePixelRatio);
+      container.appendChild(flowerRenderer.domElement);
+
+      flowerGroup = new THREE.Group();
+      flowerScene.add(flowerGroup);
+
+      const ambient = new THREE.AmbientLight(0xffffff, 0.2);
+      flowerScene.add(ambient);
+
+      const dirLight = new THREE.DirectionalLight(0xff8c2a, 1.2);
+      dirLight.position.set(40, 60, 30);
+      flowerScene.add(dirLight);
+
+      const dirLight2 = new THREE.DirectionalLight(0xff2d00, 0.4);
+      dirLight2.position.set(-50, -30, -40);
+      flowerScene.add(dirLight2);
+
+      const petals = 8;
+      const perPetal = 14;
+      const total = petals * perPetal;
+
+      for (let i = 0; i < total; i++) {
+        const petal = Math.floor(i / perPetal);
+        const j = i % perPetal;
+        const angle = (petal / petals) * Math.PI * 2 + Math.random() * 0.05;
+        const radius = j * 7;
+        const height = Math.sin(j / perPetal * Math.PI) * 40;
+
+        const geometry = new THREE.SphereGeometry(3 + Math.random() * 2, 8, 8);
+        const hue = 0.06 + Math.random() * 0.1;
+        const color = new THREE.Color().setHSL(hue, 1, 0.5);
+        const material = new THREE.MeshStandardMaterial({
+          color: color,
+          roughness: 0.4,
+          metalness: 0.2,
+          emissive: color,
+          emissiveIntensity: 0.15
+        });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(
+          Math.cos(angle) * radius,
+          height - 20,
+          Math.sin(angle) * radius
+        );
+        flowerGroup.add(mesh);
+
+        bars.push({
+          mesh: mesh,
+          baseX: Math.cos(angle) * radius,
+          baseY: height - 20,
+          baseZ: Math.sin(angle) * radius,
+          petal: petal,
+          j: j,
+          speed: 1 + Math.random() * 0.5
+        });
+      }
+
+      const centerGeo = new THREE.SphereGeometry(8, 16, 16);
+      const centerMat = new THREE.MeshStandardMaterial({
+        color: 0xff6a00,
+        emissive: 0xff6a00,
+        emissiveIntensity: 0.5,
+        roughness: 0.3
+      });
+      const centerMesh = new THREE.Mesh(centerGeo, centerMat);
+      centerMesh.position.set(0, -20, 0);
+      flowerGroup.add(centerMesh);
+
+      window.addEventListener('resize', resizeFlower);
+    }
+
+    function resizeFlower() {
+      const container = document.getElementById('flower-3d');
+      if (!container || !flowerRenderer) return;
+      flowerCamera.aspect = container.clientWidth / container.clientHeight;
+      flowerCamera.updateProjectionMatrix();
+      flowerRenderer.setSize(container.clientWidth, container.clientHeight);
+    }
+
+    function animateFlower() {
+      requestAnimationFrame(animateFlower);
+
+      if (flowerGroup) {
+        flowerGroup.rotation.y += 0.005;
+        flowerGroup.rotation.x = Math.sin(Date.now() * 0.0005) * 0.15;
+
+        const time = Date.now() * 0.002;
+
+        bars.forEach(b => {
+          const level = b.petal % 2 === 0 ? avgBass : avgMid;
+          const pulse = 1 + level * 3;
+          const wobble = Math.sin(time * b.speed + b.j * 0.5) * 0.5;
+
+          b.mesh.position.x = b.baseX * pulse + wobble * 2;
+          b.mesh.position.y = b.baseY + level * 15 * (b.j / 14) + Math.sin(time * b.speed) * 2;
+          b.mesh.position.z = b.baseZ * pulse;
+
+          const scale = 1 + level * 2.5;
+          b.mesh.scale.setScalar(scale);
+
+          const brightness = 0.15 + level * 1.2;
+          b.mesh.material.emissiveIntensity = brightness;
+        });
+      }
+
+      if (flowerRenderer) flowerRenderer.render(flowerScene, flowerCamera);
+    }
+
+    function updateAudioLevels() {
+      if (audioAnalyser && isPlaying) {
+        audioAnalyser.getByteFrequencyData(audioFreqData);
+
+        let bassSum = 0, midSum = 0, highSum = 0;
+        for (let i = 0; i < 16; i++) bassSum += audioFreqData[i];
+        for (let i = 16; i < 64; i++) midSum += audioFreqData[i];
+        for (let i = 64; i < 130; i++) highSum += audioFreqData[i];
+
+        avgBass = (bassSum / (16 * 255));
+        avgMid = (midSum / (48 * 255));
+        avgHigh = (highSum / (66 * 255));
+        bgAudioLevel = (avgBass + avgMid + avgHigh) / 3;
+      } else {
+        avgBass += (0 - avgBass) * 0.05;
+        avgMid += (0 - avgMid) * 0.05;
+        avgHigh += (0 - avgHigh) * 0.05;
+        bgAudioLevel += (0 - bgAudioLevel) * 0.05;
+      }
+      setTimeout(updateAudioLevels, 120);
+    }
+
+    initFlower();
+    animateFlower();
+
+    let neurVideo, neurCanvas, nctx, poseNet, handposeModel, neuralRunning = false;
+
+    let neurAudioCtx = null;
+    let neurAudioAnalyser = null;
+    let neurAudioSource = null;
+    let neurAudioBuffer = null;
+    let neurAudioPlaying = false;
+    let neurAudioFreq = null;
+    let neurAudioLevel = 0;
+    let neurAudioBass = 0;
+
+    function initNeuralAudio() {
+      if (neurAudioCtx) return;
+      neurAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      neurAudioAnalyser = neurAudioCtx.createAnalyser();
+      neurAudioAnalyser.fftSize = 512;
+      neurAudioFreq = new Uint8Array(neurAudioAnalyser.frequencyBinCount);
+      neurAudioAnalyser.connect(neurAudioCtx.destination);
+      setNeurStatus('Player audio pronto');
+    }
+
+    function loadNeuralAudio(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      initNeuralAudio();
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        neurAudioCtx.decodeAudioData(e.target.result, function(buffer) {
+          neurAudioBuffer = buffer;
+          document.getElementById('neur-audio-label').textContent = file.name;
+          setNeurStatus('Brano pronto - premi Play');
+        }, function() {
+          alert('Impossibile decodificare il file audio');
+        });
+      };
+      reader.readAsArrayBuffer(file);
+      event.target.value = '';
+    }
+
+    function toggleNeuralAudio() {
+      if (neurAudioPlaying) {
+        stopNeuralAudio();
+      } else {
+        startNeuralAudio();
+      }
+    }
+
+    function startNeuralAudio() {
+      if (!neurAudioCtx || !neurAudioBuffer) {
+        initNeuralAudio();
+        if (!neurAudioBuffer) { setNeurStatus('Carica prima un brano'); return; }
+      }
+      neurAudioCtx.resume();
+
+      if (neurAudioSource) {
+        neurAudioSource.stop();
+        neurAudioSource.disconnect();
+      }
+
+      neurAudioSource = neurAudioCtx.createBufferSource();
+      neurAudioSource.buffer = neurAudioBuffer;
+      neurAudioSource.loop = true;
+      neurAudioSource.connect(neurAudioAnalyser);
+      neurAudioSource.start(0);
+
+      neurAudioPlaying = true;
+      document.getElementById('neur-audio-toggle').textContent = 'Stop';
+      setNeurStatus('Rilevamento + audio attivi');
+    }
+
+    function stopNeuralAudio() {
+      if (neurAudioSource) {
+        neurAudioSource.stop();
+        neurAudioSource.disconnect();
+        neurAudioSource = null;
+      }
+      neurAudioPlaying = false;
+      document.getElementById('neur-audio-toggle').textContent = 'Play';
+      setNeurStatus('Audio fermato');
+    }
+
+    function startNeural() {
+      if (neuralRunning) return;
+
+      neurVideo = document.getElementById('neur-video');
+      neurCanvas = document.getElementById('neur-canvas');
+      nctx = neurCanvas.getContext('2d');
+
+      setNeurStatus('Connessione alla webcam...');
+
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+          .then(function(stream) {
+            neurVideo.srcObject = stream;
+            neurVideo.play();
+            document.getElementById('neur-placeholder').style.display = 'none';
+            document.getElementById('neur-start').style.display = 'none';
+            neuralRunning = true;
+
+            neurCanvas.width = neurCanvas.parentElement.clientWidth;
+            neurCanvas.height = neurCanvas.parentElement.clientHeight;
+
+            setNeurStatus('Caricamento modelli IA (posenet + handpose)...');
+
+            loadPoseModels();
+          })
+          .catch(function() {
+            setNeurStatus('Accesso webcam negato');
+          });
+      } else {
+        setNeurStatus('Webcam non disponibile');
+      }
+    }
+
+    function loadPoseModels() {
+      poseNet = ml5.poseNet('multiple', function() {
+        setNeurStatus('Posenet pronto - attivazione handpose...');
+        startHandPose();
+      });
+
+      poseNet.on('pose', function(results) {
+        drawPose(results);
+      });
+    }
+
+    function startHandPose() {
+      handposeModel = ml5.handpose(function() {
+        setNeurStatus('Rilevamento attivo: muoviti davanti alla webcam');
+      });
+
+      handposeModel.on('predict', function(results) {
+        drawHands(results);
+      });
+    }
+
+    function drawPose(results) {
+      if (!results || results.length === 0) return;
+
+      results.forEach(function(result) {
+        if (!result.pose || !result.pose.keypoints) return;
+
+        const points = result.pose.keypoints;
+
+        points.forEach(function(kp) {
+          nctx.beginPath();
+          nctx.arc(kp.position.x, kp.position.y, 3 + neurAudioLevel * 10, 0, Math.PI * 2);
+          nctx.fillStyle = `rgba(255, ${100 + neurAudioBass * 155}, 20, 0.9)`;
+          nctx.fill();
+        });
+
+        drawBones(points, [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,11],[11,12],[12,8],[11,13],[13,15],[15,17],[12,14],[14,16],[16,18],[5,6],[5,6]]);
+      });
+    }
+
+    function drawBones(points, pairs) {
+      pairs.forEach(function(pair) {
+        const a = points[pair[0]];
+        const b = points[pair[1]];
+        if (!a || !b) return;
+        nctx.beginPath();
+        nctx.moveTo(a.position.x, a.position.y);
+        nctx.lineTo(b.position.x, b.position.y);
+        nctx.strokeStyle = `rgba(255, ${100 + neurAudioBass * 155}, 20, 0.5 + neurAudioLevel * 0.5)`;
+        nctx.lineWidth = 2 + neurAudioLevel * 5;
+        nctx.stroke();
+      });
+    }
+
+    function drawHands(results) {
+      if (!results || results.length === 0) return;
+      drawNeuralBase();
+
+      const handColors = ['rgba(0, 255, 200, 0.9)', 'rgba(255, 0, 150, 0.9)'];
+      results.forEach(function(hand, idx) {
+        const color = handColors[idx % 2];
+        hand.landmarks.forEach(function(lm) {
+          nctx.beginPath();
+          nctx.arc(lm[0], lm[1], 2.5 + neurAudioLevel * 8, 0, Math.PI * 2);
+          nctx.fillStyle = color.replace('0.9', (0.5 + neurAudioLevel * 0.5).toFixed(2));
+          nctx.fill();
+        });
+
+        const fingers = [[0,1,2,3,4],[0,5,6,7,8],[0,9,10,11,12],[0,13,14,15,16],[0,17,18,19,20]];
+        fingers.forEach(function(chain) {
+          for (let i = 0; i < chain.length - 1; i++) {
+            const a = hand.landmarks[chain[i]];
+            const b = hand.landmarks[chain[i+1]];
+            nctx.beginPath();
+            nctx.moveTo(a[0], a[1]);
+            nctx.lineTo(b[0], b[1]);
+            nctx.strokeStyle = color;
+            nctx.lineWidth = 2.5;
+            nctx.stroke();
+          }
+        });
+      });
+    }
+
+    function drawNeuralBase() {
+      nctx.clearRect(0, 0, neurCanvas.width, neurCanvas.height);
+
+      const pulse = neurAudioLevel;
+      const g = nctx.createRadialGradient(
+        neurCanvas.width / 2, neurCanvas.height / 2, 10,
+        neurCanvas.width / 2, neurCanvas.height / 2, neurCanvas.width / 2
+      );
+      g.addColorStop(0, `rgba(${180 * pulse}, ${40 + 60 * pulse}, 0, ${0.2 * pulse})`);
+      g.addColorStop(1, 'rgba(10, 10, 20, 0.85)');
+      nctx.fillStyle = g;
+      nctx.fillRect(0, 0, neurCanvas.width, neurCanvas.height);
+    }
+
+    function setNeurStatus(msg) {
+      const el = document.getElementById('neur-status');
+      if (el) el.textContent = msg;
+    }
+
+    window.addEventListener('resize', function() {
+      if (neurCanvas) {
+        neurCanvas.width = neurCanvas.parentElement.clientWidth;
+        neurCanvas.height = neurCanvas.parentElement.clientHeight;
+      }
+    });
+
+    function updateNeuralAudioLevels() {
+      if (neurAudioAnalyser && neurAudioPlaying) {
+        neurAudioAnalyser.getByteFrequencyData(neurAudioFreq);
+
+        let bassSum = 0;
+        for (let i = 0; i < 16; i++) bassSum += neurAudioFreq[i];
+        neurAudioBass = bassSum / (16 * 255);
+
+        let total = 0;
+        for (let i = 0; i < 64; i++) total += neurAudioFreq[i];
+        neurAudioLevel = total / (64 * 255);
+      } else {
+        neurAudioBass += (0 - neurAudioBass) * 0.08;
+        neurAudioLevel += (0 - neurAudioLevel) * 0.08;
+      }
+      requestAnimationFrame(updateNeuralAudioLevels);
+    }
+
+    updateNeuralAudioLevels();
+    updateAudioLevels();
+
     const canvas = document.getElementById('canvas-bg');
     const ctx = canvas.getContext('2d');
 
@@ -625,10 +1891,12 @@
       const centerX = width / 2;
       const centerY = height / 2;
 
+      const amp = 1 + bgAudioLevel * 2.5;
+
       dots.forEach(dot => {
-        const waveX = Math.sin(time + dot.baseY * 0.03) * 30;
-        const waveY = Math.cos(time * 0.7 + dot.baseX * 0.03) * 25;
-        const waveZ = Math.sin(time * 1.3 + dot.baseX * 0.02 + dot.baseY * 0.02) * 40;
+        const waveX = Math.sin(time + dot.baseY * 0.03) * 30 * amp;
+        const waveY = Math.cos(time * 0.7 + dot.baseX * 0.03) * 25 * amp;
+        const waveZ = Math.sin(time * 1.3 + dot.baseX * 0.02 + dot.baseY * 0.02) * 40 * amp;
 
         const rotateY = Math.sin(time * 0.3) * 0.5;
         const rx = dot.baseX * Math.cos(rotateY) - waveZ * Math.sin(rotateY);
@@ -639,12 +1907,13 @@
         dot.z = rz;
 
         const scale = 600 / (600 + dot.z);
-        const size = 3 * scale;
+        const size = (3 + bgAudioLevel * 6) * scale;
         const alpha = 0.35 + scale * 0.4;
+        const added = bgAudioLevel * 100;
 
         ctx.beginPath();
         ctx.arc(dot.x, dot.y, size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, ${80 + scale * 50}, ${scale * 20}, ${alpha})`;
+        ctx.fillStyle = `rgba(255, ${80 + added}, ${scale * 20}, ${alpha})`;
         ctx.fill();
       });
 
