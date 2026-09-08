@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinilkraft Records - Il Tuo Negozio di Vinili</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <h1>💿 Vinilkraft Records</h1>
+                <p>Vinili &amp; Collezionismo dal 1985</p>
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Cerca artista o album..." id="searchInput">
+                <button onclick="searchProducts()">Cerca</button>
+            </div>
+            <div class="cart">
+                <span id="cartCount">0</span> 🛒 Carrello
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#rock">Rock</a></li>
+            <li><a href="#jazz">Jazz</a></li>
+            <li><a href="#pop">Pop</a></li>
+            <li><a href="#classica">Classica</a></li>
+            <li><a href="#collezionismo">Collezionismo</a></li>
+            <li><a href="#offerte">Offerte Speciali</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="banner">
+            <div class="banner-content">
+                <h2>La Musica torna in Vinile!</h2>
+                <p>Scopri la nostra selezione di vinili nuovi e usati con il calore dell'analogico.</p>
+                <button onclick="scrollToSection('offerte')">Scopri le Offerte</button>
+            </div>
+        </section>
+
+        <section id="rock" class="shelf-section">
+            <h2>🎸 Rock</h2>
+            <div class="shelf">
+                <div class="shelf-item" onclick="addToCart('Dark Side of the Moon - Pink Floyd', 32.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Dark Side of the Moon</h3>
+                        <p class="artist">Pink Floyd</p>
+                        <p class="price">€32.00</p>
+                        <p class="year">1973 · 180g</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Abbey Road - The Beatles', 29.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Abbey Road</h3>
+                        <p class="artist">The Beatles</p>
+                        <p class="price">€29.00</p>
+                        <p class="year">1969 · Remasterizzato</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Nevermind - Nirvana', 26.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Nevermind</h3>
+                        <p class="artist">Nirvana</p>
+                        <p class="price">€26.00</p>
+                        <p class="year">1991 · Edizione originale</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Led Zeppelin IV - Led Zeppelin', 28.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Led Zeppelin IV</h3>
+                        <p class="artist">Led Zeppelin</p>
+                        <p class="price">€28.00</p>
+                        <p class="year">1971 · Ristampa</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Born to Run - Bruce Springsteen', 25.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Born to Run</h3>
+                        <p class="artist">Bruce Springsteen</p>
+                        <p class="price">€25.00</p>
+                        <p class="year">1975 · Analogue Productions</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Hotel California - Eagles', 24.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Hotel California</h3>
+                        <p class="artist">Eagles</p>
+                        <p class="price">€24.00</p>
+                        <p class="year">1976 · Gatefold</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="jazz" class="shelf-section">
+            <h2>🎷 Jazz</h2>
+            <div class="shelf">
+                <div class="shelf-item" onclick="addToCart('Kind of Blue - Miles Davis', 30.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Kind of Blue</h3>
+                        <p class="artist">Miles Davis</p>
+                        <p class="price">€30.00</p>
+                        <p class="year">1959 · Mono</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Blue Train - John Coltrane', 27.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Blue Train</h3>
+                        <p class="artist">John Coltrane</p>
+                        <p class="price">€27.00</p>
+                        <p class="year">1957 · Blue Note</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Time Out - Dave Brubeck', 25.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Time Out</h3>
+                        <p class="artist">Dave Brubeck</p>
+                        <p class="price">€25.00</p>
+                        <p class="year">1959 · Stereo</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('A Love Supreme - John Coltrane', 31.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>A Love Supreme</h3>
+                        <p class="artist">John Coltrane</p>
+                        <p class="price">€31.00</p>
+                        <p class="year">1965 · Ediz. 2020</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('The Girl From Ipanema - Stan Getz', 24.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>The Girl From Ipanema</h3>
+                        <p class="artist">Stan Getz</p>
+                        <p class="price">€24.00</p>
+                        <p class="year">1964 · Bossa Nova</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Bitches Brew - Miles Davis', 33.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Bitches Brew</h3>
+                        <p class="artist">Miles Davis</p>
+                        <p class="price">€33.00</p>
+                        <p class="year">1970 · Doppio LP</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pop" class="shelf-section">
+            <h2>🎤 Pop</h2>
+            <div class="shelf">
+                <div class="shelf-item" onclick="addToCart('Thriller - Michael Jackson', 28.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Thriller</h3>
+                        <p class="artist">Michael Jackson</p>
+                        <p class="price">€28.00</p>
+                        <p class="year">1982 · Picture Disc</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('1989 (Taylor\'s Version) - Taylor Swift', 32.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>1989 (Taylor's Version)</h3>
+                        <p class="artist">Taylor Swift</p>
+                        <p class="price">€32.00</p>
+                        <p class="year">2023 · Rosa Limited</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Like a Virgin - Madonna', 22.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Like a Virgin</h3>
+                        <p class="artist">Madonna</p>
+                        <p class="price">€22.00</p>
+                        <p class="year">1984 · Prima stampa</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Back to Black - Amy Winehouse', 26.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Back to Black</h3>
+                        <p class="artist">Amy Winehouse</p>
+                        <p class="price">€26.00</p>
+                        <p class="year">2006 · Vinile nero</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Rumours - Fleetwood Mac', 27.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Rumours</h3>
+                        <p class="artist">Fleetwood Mac</p>
+                        <p class="price">€27.00</p>
+                        <p class="year">1977 · Remasterizzato</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Lemonade - Beyoncé', 29.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Lemonade</h3>
+                        <p class="artist">Beyoncé</p>
+                        <p class="price">€29.00</p>
+                        <p class="year">2016 · Doppio LP</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="classica" class="shelf-section">
+            <h2>🎻 Classica</h2>
+            <div class="shelf">
+                <div class="shelf-item" onclick="addToCart('9 Sinfonie - Beethoven / Karajan', 65.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>9 Sinfonie</h3>
+                        <p class="artist">Beethoven / Karajan</p>
+                        <p class="price">€65.00</p>
+                        <p class="year">1963 · Box Set 5 LP</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Le Quattro Stagioni - Vivaldi', 23.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Le Quattro Stagioni</h3>
+                        <p class="artist">A. Vivaldi</p>
+                        <p class="price">€23.00</p>
+                        <p class="year">1970 · Deutsche Grammophon</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Notturni - Chopin', 24.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Notturni</h3>
+                        <p class="artist">F. Chopin</p>
+                        <p class="price">€24.00</p>
+                        <p class="year">1965 · Mono</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('La Primavera - Stravinsky', 26.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>La Primavera</h3>
+                        <p class="artist">I. Stravinsky</p>
+                        <p class="price">€26.00</p>
+                        <p class="year">1972 · Ediz. limitata</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Requiem - Mozart', 25.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Requiem</h3>
+                        <p class="artist">W.A. Mozart</p>
+                        <p class="price">€25.00</p>
+                        <p class="year">1968 · Stereo</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Clair de Lune - Debussy', 21.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Clair de Lune</h3>
+                        <p class="artist">C. Debussy</p>
+                        <p class="price">€21.00</p>
+                        <p class="year">1974 · Premium</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="collezionismo" class="shelf-section">
+            <h2>⭐ Collezionismo</h2>
+            <div class="shelf">
+                <div class="shelf-item" onclick="addToCart('Sgt. Pepper\'s - The Beatles (1967)', 150.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Sgt. Pepper's</h3>
+                        <p class="artist">The Beatles</p>
+                        <p class="price">€150.00</p>
+                        <p class="year">1967 · Stampaggio originale</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Dark Side - Pink Floyd (Nuclear)', 120.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Dark Side</h3>
+                        <p class="artist">Pink Floyd</p>
+                        <p class="price">€120.00</p>
+                        <p class="year">1973 · Etichetta nucleare rosa</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Satisfaction - Rolling Stones (7")', 55.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Satisfaction</h3>
+                        <p class="artist">Rolling Stones</p>
+                        <p class="price">€55.00</p>
+                        <p class="year">1965 · 7" Singolo</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Astroworld - Travis Scott (Oscar)', 85.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Astroworld</h3>
+                        <p class="artist">Travis Scott</p>
+                        <p class="price">€85.00</p>
+                        <p class="year">2018 · Ediz. limitata</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('Purple Rain - Prince (USA)', 60.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Purple Rain</h3>
+                        <p class="artist">Prince</p>
+                        <p class="price">€60.00</p>
+                        <p class="year">1984 · Stampaggio USA</p>
+                    </div>
+                </div>
+                <div class="shelf-item" onclick="addToCart('White Album - Beatles (Numero)', 200.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>White Album</h3>
+                        <p class="artist">The Beatles</p>
+                        <p class="price">€200.00</p>
+                        <p class="year">1968 · Numerato N°012345</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="offerte" class="shelf-section offers">
+            <h2>🏷️ Offerte Speciali</h2>
+            <div class="shelf">
+                <div class="shelf-item offer-item" onclick="addToCart('Born to Be Wild - Steppenwolf', 15.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Born to Be Wild</h3>
+                        <p class="artist">Steppenwolf</p>
+                        <p class="price"><span class="old-price">€22.00</span> €15.00</p>
+                        <p class="description">Offerta del mese!</p>
+                        <span class="discount-badge">-32%</span>
+                    </div>
+                </div>
+                <div class="shelf-item offer-item" onclick="addToCart('Elvis Presley 30 #1 Hits', 18.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>30 #1 Hits</h3>
+                        <p class="artist">Elvis Presley</p>
+                        <p class="price"><span class="old-price">€28.00</span> €18.00</p>
+                        <p class="description">Il Re del Rock!</p>
+                        <span class="discount-badge">-36%</span>
+                    </div>
+                </div>
+                <div class="shelf-item offer-item" onclick="addToCart('Giant Steps - John Coltrane', 20.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Giant Steps</h3>
+                        <p class="artist">John Coltrane</p>
+                        <p class="price"><span class="old-price">€28.00</span> €20.00</p>
+                        <p class="description">Solo per collezionisti</p>
+                        <span class="discount-badge">-29%</span>
+                    </div>
+                </div>
+                <div class="shelf-item offer-item" onclick="addToCart('Future Nostalgia - Dua Lipa', 20.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Future Nostalgia</h3>
+                        <p class="artist">Dua Lipa</p>
+                        <p class="price"><span class="old-price">€26.00</span> €20.00</p>
+                        <p class="description">Vinile neon trasparente</p>
+                        <span class="discount-badge">-23%</span>
+                    </div>
+                </div>
+                <div class="shelf-item offer-item" onclick="addToCart('The Doors - The Doors', 18.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>The Doors</h3>
+                        <p class="artist">The Doors</p>
+                        <p class="price"><span class="old-price">€28.00</span> €18.00</p>
+                        <p class="description">Classico psichedelico</p>
+                        <span class="discount-badge">-36%</span>
+                    </div>
+                </div>
+                <div class="shelf-item offer-item" onclick="addToCart('Come Together - AA.VV.', 22.00)">
+                    <div class="product-image">💿</div>
+                    <div class="product-info">
+                        <h3>Come Together</h3>
+                        <p class="artist">AA.VV.</p>
+                        <p class="price"><span class="old-price">€0.00</span> €22.00</p>
+                        <p class="description">Tributo ai Beatles</p>
+                        <span class="discount-badge">3x2</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>📍 Dove Siamo</h3>
+                <p>Via della Musica 42</p>
+                <p>00100 Roma (RM)</p>
+                <p>Tel: 06 7654321</p>
+            </div>
+            <div class="footer-section">
+                <h3>🕐 Orari</h3>
+                <p>Lun - Sab: 10:00 - 20:00</p>
+                <p>Domenica: 11:00 - 19:00</p>
+            </div>
+            <div class="footer-section">
+                <h3>📧 Contatti</h3>
+                <p>info@vinilkraftrecords.it</p>
+                <p>ordini@vinilkraftrecords.it</p>
+            </div>
+            <div class="footer-section">
+                <h3>📱 Social</h3>
+                <p>Instagram | Facebook</p>
+                <p>Discogs | Bandcamp</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Vinilkraft Records. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+
+    <div id="cartSidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h3>🛒 Carrello</h3>
+            <button onclick="toggleCart()" class="close-cart">&times;</button>
+        </div>
+        <div id="cartItems" class="cart-items">
+            <!-- Cart items will be inserted here -->
+        </div>
+        <div class="cart-total">
+            <p>Totale: <span id="cartTotal">€0.00</span></p>
+            <button onclick="checkout()" class="checkout-btn">Procedi all'Ordine</button>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay" onclick="toggleCart()"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
