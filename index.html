@@ -8,8 +8,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Righteous&family=Bowlby+One+SC&family=Monoton&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm",
+            "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js",
+            "animejs/adapters/three": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/modules/adapters/three/index.js"
+        }
+    }
+    </script>
 </head>
 <body>
+    <div class="full-container fixed-bg"></div>
     <header>
         <div class="header-container">
             <div class="logo">
@@ -500,5 +510,6 @@
 
     <script src="script.js"></script>
     <script type="module" src="title.js"></script>
+    <script type="module" src="background.js"></script>
 </body>
 </html>
