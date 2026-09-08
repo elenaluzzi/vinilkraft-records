@@ -16,6 +16,10 @@ function removeFromCart(name) {
     updateCartDisplay();
 }
 
+function buyTicket(eventName, price) {
+    addToCart(`Biglietto: ${eventName}`, price);
+}
+
 function updateCartDisplay() {
     const cartCount = document.getElementById('cartCount');
     const cartItems = document.getElementById('cartItems');

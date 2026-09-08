@@ -6,22 +6,25 @@
     <title>Vinilkraft Records - Il Tuo Negozio di Vinili</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Righteous&family=Bowlby+One+SC&family=Monoton&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="liminal-bg"></div>
     <header>
         <div class="header-container">
             <div class="logo">
-                <h1>Vinilkraft Records</h1>
-                <p>Vinili &amp; Collezionismo dal 1985</p>
+                <h1 class="retro-title">Vinilkraft Records</h1>
+                <p class="retro-sub">Vinili &amp; Collezionismo dal 1985</p>
             </div>
-            <div class="search-bar">
-                <input type="text" placeholder="Cerca artista o album..." id="searchInput">
-                <button onclick="searchProducts()">Cerca</button>
-            </div>
-            <div class="cart" onclick="toggleCart()">
-                <span id="cartCount">0</span> Carrello
+            <div class="header-right">
+                <div class="search-bar">
+                    <input type="text" placeholder="Cerca artista o album..." id="searchInput">
+                    <button onclick="searchProducts()">Cerca</button>
+                </div>
+                <div class="cart" onclick="toggleCart()">
+                    <span id="cartCount">0</span> Carrello
+                </div>
             </div>
         </div>
     </header>
@@ -34,6 +37,7 @@
             <li><a href="#classica">Classica</a></li>
             <li><a href="#collezionismo">Collezionismo</a></li>
             <li><a href="#offerte">Offerte</a></li>
+            <li><a href="#biglietti">Biglietti</a></li>
         </ul>
     </nav>
 
@@ -391,6 +395,61 @@
                         <p class="price"><span class="old-price">€45.00</span> €35.00</p>
                         <span class="discount-badge">3x2</span>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="biglietti" class="tickets-section">
+            <h2>Biglietti Concerti Live</h2>
+            <p class="tickets-intro">Prendi i tuoi biglietti per i prossimi eventi nel nostro store!</p>
+            <div class="tickets-grid">
+                <div class="ticket-card" onclick="buyTicket('Pink Floyd - The Dark Side Tour', 45.00)">
+                    <div class="ticket-date">14 MAR</div>
+                    <h3>Pink Floyd Tribute</h3>
+                    <p class="ticket-venue">Palazzo dello Sport · Roma</p>
+                    <p class="ticket-info">The Dark Side Tour</p>
+                    <p class="ticket-price">€45.00</p>
+                    <span class="ticket-badge">Quasi sold out</span>
+                </div>
+                <div class="ticket-card" onclick="buyTicket('Jazz Night - Coltrane Tribute', 30.00)">
+                    <div class="ticket-date">22 MAR</div>
+                    <h3>Jazz Night</h3>
+                    <p class="ticket-venue">Auditorium Parco · Roma</p>
+                    <p class="ticket-info">Tributo a John Coltrane</p>
+                    <p class="ticket-price">€30.00</p>
+                    <span class="ticket-badge">Ancora disponibile</span>
+                </div>
+                <div class="ticket-card" onclick="buyTicket('Vinyl Fever - Black Party', 40.00)">
+                    <div class="ticket-date">05 APR</div>
+                    <h3>Vinyl Fever Party</h3>
+                    <p class="ticket-venue">Stazione Birra · Roma</p>
+                    <p class="ticket-info">Disco party anni 70-80</p>
+                    <p class="ticket-price">€40.00</p>
+                    <span class="ticket-badge">Disponibile</span>
+                </div>
+                <div class="ticket-card" onclick="buyTicket('Boss Springsteen Tribute', 35.00)">
+                    <div class="ticket-date">19 APR</div>
+                    <h3>The Boss Night</h3>
+                    <p class="ticket-venue">Tennis Club · Roma</p>
+                    <p class="ticket-info">Tributo Springsteen</p>
+                    <p class="ticket-price">€35.00</p>
+                    <span class="ticket-badge">Quasi sold out</span>
+                </div>
+                <div class="ticket-card" onclick="buyTicket('Symphonic Night - Beethoven', 50.00)">
+                    <div class="ticket-date">02 MAG</div>
+                    <h3>Symphonic Night</h3>
+                    <p class="ticket-venue">Teatro dell'Opera · Roma</p>
+                    <p class="ticket-info">Le 9 Sinfonie di Beethoven</p>
+                    <p class="ticket-price">€50.00</p>
+                    <span class="ticket-badge">Disponibile</span>
+                </div>
+                <div class="ticket-card" onclick="buyTicket('Flashback 80s Festival', 25.00)">
+                    <div class="ticket-date">17 MAG</div>
+                    <h3>Flashback 80s</h3>
+                    <p class="ticket-venue">Parco della Musica · Roma</p>
+                    <p class="ticket-info">Festival musica anni 80</p>
+                    <p class="ticket-price">€25.00</p>
+                    <span class="ticket-badge">Pacchetto famiglia 2x1</span>
                 </div>
             </div>
         </section>
