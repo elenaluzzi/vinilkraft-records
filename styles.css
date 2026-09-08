@@ -9,34 +9,12 @@ body {
     font-weight: 300;
     line-height: 1.6;
     color: #1a1a1a;
-    background-color: #f7f7f7;
+    background-color: #ffffff;
     background-image:
-        linear-gradient(#e5e5e5 1px, transparent 1px),
-        linear-gradient(90deg, #e5e5e5 1px, transparent 1px);
+        linear-gradient(#111 2px, transparent 2px),
+        linear-gradient(90deg, #111 2px, transparent 2px);
     background-size: 40px 40px;
     position: relative;
-}
-
-/* ==== THREE.JS BACKGROUND ==== */
-.full-container {
-    --hex-red-1:     #000000;
-    --hex-orange-1:  #2b2b2b;
-    --hex-yellow-1:  #555555;
-    --hex-green-1:   #808080;
-    --hex-sky-1:     #aaaaaa;
-    --hex-purple-1:  #cccccc;
-    --hex-pink-1:    #f0f0f0;
-}
-
-.full-container.fixed-bg {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-}
-
-.full-container.fixed-bg canvas {
-    display: block;
 }
 
 /* ==== TITLE (anime.js scrambleText, Arial) ==== */

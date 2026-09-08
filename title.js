@@ -1,4 +1,4 @@
-import { animate, scrambleText } from 'animejs';
+import { animate, scrambleText } from 'https://esm.sh/animejs';
 
 const title = document.querySelector('.retro-title');
 
