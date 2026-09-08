@@ -17,24 +17,16 @@ body {
     position: relative;
 }
 
-/* ==== RETRO 70s-80s LOGO ==== */
+/* ==== TITLE (anime.js scrambleText, Arial) ==== */
 .retro-title {
-    font-family: 'Righteous', 'Bowlby One SC', sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 2.5rem;
-    font-weight: 400;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 3px;
-    color: #ffcf4d;
-    -webkit-text-stroke: 1.5px #3a2413;
-    text-shadow:
-        0 1px 0 #e8892b,
-        0 2px 0 #d9730f,
-        0 3px 0 #c25e00,
-        0 4px 0 #a84d00,
-        2px 6px 6px rgba(60,35,10,0.45),
-        0 8px 28px rgba(160,120,20,0.55);
+    letter-spacing: 2px;
+    color: #2f2213;
+    text-shadow: 3px 3px 0 #ffcf4d;
     display: inline-block;
-    animation: retroWobble 3.2s ease-in-out infinite;
     line-height: 1.1;
 }
 
@@ -45,13 +37,6 @@ body {
     letter-spacing: 2px;
     text-shadow: 1px 1px 0 rgba(60,35,10,0.5);
     animation: retroGlow 2.6s ease-in-out infinite;
-}
-
-@keyframes retroWobble {
-    0%, 100% { transform: rotate(-2deg) scale(1); }
-    25% { transform: rotate(1.5deg) scale(1.03); }
-    50% { transform: rotate(-1deg) scale(1.06); }
-    75% { transform: rotate(2deg) scale(1.02); }
 }
 
 @keyframes retroGlow {
