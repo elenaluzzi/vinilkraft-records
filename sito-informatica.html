@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechWave - Soluzioni Informatiche</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    #canvas-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #ff8c2a;
+      letter-spacing: 2px;
+    }
+
+    .logo span { color: #fff; }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 30px;
+    }
+
+    nav ul li a {
+      color: #ccc;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s;
+    }
+
+    nav ul li a:hover { color: #ff8c2a; }
+
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 30px rgba(255, 140, 42, 0.3);
+    }
+
+    .hero h1 span { color: #ff8c2a; }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: #bbb;
+      max-width: 600px;
+      margin-bottom: 40px;
+      line-height: 1.7;
+    }
+
+    .btn {
+      padding: 14px 40px;
+      background: linear-gradient(135deg, #ff8c2a, #ff5e00);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 40px rgba(255, 94, 0, 0.4);
+    }
+
+    .section {
+      padding: 100px 60px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+
+    .section h2 {
+      text-align: center;
+      font-size: 2.2rem;
+      margin-bottom: 60px;
+      color: #ff8c2a;
+    }
+
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 140, 42, 0.15);
+      border-radius: 16px;
+      padding: 40px 30px;
+      text-align: center;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: #ff8c2a;
+    }
+
+    .card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    .card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: #999;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .about {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .about p {
+      color: #bbb;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      margin-top: 50px;
+      flex-wrap: wrap;
+    }
+
+    .stat h3 {
+      font-size: 2.5rem;
+      color: #ff8c2a;
+    }
+
+    .stat p {
+      color: #999;
+      font-size: 0.9rem;
+    }
+
+    .contact {
+      text-align: center;
+    }
+
+    .contact-form {
+      max-width: 500px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      padding: 14px 20px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 140, 42, 0.2);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      border-color: #ff8c2a;
+    }
+
+    .contact-form textarea { height: 120px; resize: vertical; }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      font-size: 0.85rem;
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 15px 20px; }
+      nav ul { gap: 15px; }
+      .hero h1 { font-size: 2.2rem; }
+      .section { padding: 60px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">Tech<span>Wave</span></div>
+    <ul>
+      <li><a href="#servizi">Servizi</a></li>
+      <li><a href="#chi-siamo">Chi Siamo</a></li>
+      <li><a href="#contatti">Contatti</a></li>
+    </ul>
+  </nav>
+
+  <div class="hero">
+    <h1>Soluzioni <span>Informatiche</span> d'Avanguardia</h1>
+    <p>Progettiamo, sviluppiamo e gestiamo infrastrutture IT innovative per far crescere il tuo business nel mondo digitale.</p>
+    <a href="#servizi" class="btn">Scopri i Servizi</a>
+  </div>
+
+  <div class="section" id="servizi">
+    <h2>I Nostri Servizi</h2>
+    <div class="services">
+      <div class="card">
+        <div class="card-icon">&#x1F4BB;</div>
+        <h3>Sviluppo Web</h3>
+        <p>Siti web e applicazioni su misura, performanti e responsive per ogni esigenza aziendale.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#x2601;&#xFE0F;</div>
+        <h3>Cloud & Hosting</h3>
+        <p>Migrazione e gestione cloud, server dedicati e soluzioni di archiviazione scalabili.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#x1F512;</div>
+        <h3>Cybersecurity</h3>
+        <p>Protezione dati, audit di sicurezza, firewall e monitoraggio continuo delle minacce.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#x1F4E6;</div>
+        <h3>Assistenza IT</h3>
+        <p>Supporto tecnico rapido, manutenzione sistemi e helpdesk dedicato al tuo team.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#x1F916;</div>
+        <h3>Automazione</h3>
+        <p>Processi automatizzati con AI e machine learning per ottimizzare la produttività.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#x1F4CA;</div>
+        <h3>Data Analytics</h3>
+        <p>Analisi dei dati, dashboard personalizzate e business intelligence per decisioni informate.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="chi-siamo">
+    <div class="about">
+      <h2>Chi Siamo</h2>
+      <p>Siamo un team di professionisti appassionati di tecnologia. Da oltre 10 anni aiutiamo aziende a trasformare le proprie idee in soluzioni digitali concrete e innovative.</p>
+      <p>Il nostro approccio combina competenze tecniche avanzate e una comprensione profonda delle esigenze del cliente.</p>
+      <div class="stats">
+        <div class="stat">
+          <h3>200+</h3>
+          <p>Progetti Completati</p>
+        </div>
+        <div class="stat">
+          <h3>50+</h3>
+          <p>Clienti Attivi</p>
+        </div>
+        <div class="stat">
+          <h3>10+</h3>
+          <p>Anni di Esperienza</p>
+        </div>
+        <div class="stat">
+          <h3>24/7</h3>
+          <p>Supporto Dedicato</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="contatti">
+    <div class="contact">
+      <h2>Contattaci</h2>
+      <form class="contact-form" onsubmit="event.preventDefault(); alert('Messaggio inviato!')">
+        <input type="text" placeholder="Nome" required>
+        <input type="email" placeholder="Email" required>
+        <input type="text" placeholder="Oggetto">
+        <textarea placeholder="Messaggio..." required></textarea>
+        <button type="submit" class="btn">Invia Messaggio</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 TechWave - Tutti i diritti riservati
+  </footer>
+
+  <canvas id="canvas-bg"></canvas>
+
+  <script>
+    const canvas = document.getElementById('canvas-bg');
+    const ctx = canvas.getContext('2d');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    let time = 0;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const cols = 40;
+    const rows = 25;
+    const spacing = 20;
+    const dots = [];
+
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        dots.push({
+          baseX: x * spacing - (cols * spacing) / 2,
+          baseY: y * spacing - (rows * spacing) / 2,
+          x: 0, y: 0, z: 0
+        });
+      }
+    }
+
+    function draw() {
+      ctx.fillStyle = 'rgba(10, 10, 20, 0.18)';
+      ctx.fillRect(0, 0, width, height);
+
+      time += 0.02;
+      const centerX = width / 2;
+      const centerY = height / 2;
+
+      dots.forEach(dot => {
+        const waveX = Math.sin(time + dot.baseY * 0.03) * 30;
+        const waveY = Math.cos(time * 0.7 + dot.baseX * 0.03) * 25;
+        const waveZ = Math.sin(time * 1.3 + dot.baseX * 0.02 + dot.baseY * 0.02) * 40;
+
+        const rotateY = Math.sin(time * 0.3) * 0.5;
+        const rx = dot.baseX * Math.cos(rotateY) - waveZ * Math.sin(rotateY);
+        const rz = dot.baseX * Math.sin(rotateY) + waveZ * Math.cos(rotateY);
+
+        dot.x = centerX + rx + waveX;
+        dot.y = centerY + dot.baseY + waveY;
+        dot.z = rz;
+
+        const scale = 600 / (600 + dot.z);
+        const size = 3 * scale;
+        const alpha = 0.4 + scale * 0.4;
+
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, ${140 + scale * 60}, ${30 + scale * 30}, ${alpha})`;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+
+</body>
+</html>
