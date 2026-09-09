@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VISION FEST 2026 - Festival della Visione</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Rubik+Broken+Fax&family=Space+Grotesk:wght@300;400;600;700&family=Syne:wght@400;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Rubik+Broken+Fax&family=Space+Grotesk:wght@300;400;600;700&family=Syne:wght@400;700;800&display=swap');
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -265,7 +265,7 @@
       text-align: center;
     }
 
-    .map-scene {
+      .map-scene {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -341,6 +341,119 @@
       text-transform: uppercase;
       color: #666;
       text-align: center;
+    }
+
+    /* MAPPA INTERATTIVA 2D/3D */
+    .festival-map-container {
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+      border: 2px solid #ff6a00;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #0a0a0f;
+      box-shadow: 0 0 30px rgba(255, 106, 0, 0.2), inset 0 0 60px rgba(255, 106, 0, 0.05);
+    }
+
+    .map-2d {
+      width: 100%;
+      height: 500px;
+      position: relative;
+      background: #0a0a0f;
+    }
+
+    .map-3d-overlay {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+      z-index: 10;
+    }
+
+    .map-3d-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .map-zone-marker {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      cursor: pointer;
+      z-index: 5;
+      transition: transform 0.3s ease;
+    }
+
+    .map-zone-marker:hover {
+      transform: translate(-50%, -100%) scale(1.15);
+    }
+
+    .marker-pin {
+      width: 32px;
+      height: 32px;
+      background: #ff6a00;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(255, 106, 0, 0.6);
+    }
+
+    .marker-pin::after {
+      content: '';
+      width: 12px;
+      height: 12px;
+      background: #fff;
+      border-radius: 50%;
+    }
+
+    .marker-label {
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.65rem;
+      color: #ffcf4d;
+      text-shadow: 0 0 8px rgba(255, 207, 77, 0.8);
+      letter-spacing: 1px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 106, 0, 0.3);
+    }
+
+    .map-legend {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: #888;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.stage { background: #ff6a00; }
+    .legend-dot.install { background: #ffcf4d; }
+    .legend-dot.service { background: #666; }
+
+    @media (max-width: 768px) {
+      .map-2d { height: 350px; }
+      .marker-label { font-size: 0.55rem; }
     }
 
     .about-visual {
@@ -1026,6 +1139,31 @@
 
     .neur-btn:hover { box-shadow: 0 0 30px rgba(255, 106, 0, 0.4); }
 
+    .data-mosh-toggle {
+      background: transparent !important;
+      border: 1px solid #ff6a00 !important;
+      color: #ff6a00 !important;
+      font-family: 'Orbitron', sans-serif !important;
+      font-size: 0.65rem !important;
+      letter-spacing: 3px !important;
+      margin-left: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .data-mosh-toggle.active {
+      background: linear-gradient(135deg, #ff6a00, #ff2d00) !important;
+      color: #fff !important;
+      border: none !important;
+      box-shadow: 0 0 20px rgba(255, 106, 0, 0.6);
+      animation: dataMoshPulse 1.5s infinite;
+    }
+
+    @keyframes dataMoshPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
     .neur-status {
       font-size: 0.7rem;
       letter-spacing: 2px;
@@ -1217,23 +1355,139 @@
       </div>
       <div class="festival-map">
         <div class="map-title">Mappa del Festival</div>
-        <div class="map-scene">
-          <div class="map-entry">Ingresso Principale</div>
-          <div class="map-path"></div>
-          <div class="map-stage main">Main Stage</div>
-          <div class="map-path"></div>
-          <div class="map-row">
-            <div class="map-stage">Techno Stage</div>
-            <div class="map-stage">Ambient Stage</div>
+        <div class="festival-map-container" id="festival-map-container">
+          <div class="map-2d" id="map-2d">
+            <svg viewBox="0 0 900 500" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="position:absolute; inset:0;">
+              <!-- Sfondo schematizzato -->
+              <rect width="900" height="500" fill="#0a0a0f"/>
+              
+              <!-- Griglia di riferimento futuristica -->
+              <defs>
+                <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                  <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#ff6a00" stroke-width="0.5" opacity="0.1"/>
+                </pattern>
+              </defs>
+              <rect width="900" height="500" fill="url(#grid)"/>
+              
+              <!-- Strade principali schematizzate -->
+              <path d="M 0 350 Q 200 340 400 300 T 900 250" stroke="#ff6a00" stroke-width="12" fill="none" opacity="0.4" stroke-linecap="round"/>
+              <path d="M 300 0 Q 320 150 340 300 T 380 500" stroke="#ff6a00" stroke-width="8" fill="none" opacity="0.3" stroke-linecap="round"/>
+              <path d="M 600 0 Q 580 150 560 300 T 520 500" stroke="#ff6a00" stroke-width="8" fill="none" opacity="0.3" stroke-linecap="round"/>
+              <path d="M 0 180 Q 200 200 400 220 T 900 260" stroke="#ff6a00" stroke-width="6" fill="none" opacity="0.25" stroke-linecap="round"/>
+              <path d="M 700 0 Q 720 200 740 400 T 780 500" stroke="#ff6a00" stroke-width="6" fill="none" opacity="0.2" stroke-linecap="round"/>
+              
+              <!-- Bordi strada al neon -->
+              <path d="M 0 350 Q 200 340 400 300 T 900 250" stroke="#ffcf4d" stroke-width="2" fill="none" opacity="0.6" stroke-dasharray="8,12" stroke-linecap="round"/>
+              
+              <!-- Zone del festival (aree colorate schematizzate) -->
+              <!-- Main Stage - grande piazza -->
+              <rect x="100" y="360" width="180" height="120" rx="8" fill="#ff6a00" opacity="0.08" stroke="#ff6a00" stroke-width="2" stroke-dasharray="6,4"/>
+              <text x="190" y="425" text-anchor="middle" fill="#ff6a00" font-family="Orbitron" font-size="14" font-weight="700" letter-spacing="2">MAIN STAGE</text>
+              <circle cx="190" cy="410" r="25" fill="none" stroke="#ff6a00" stroke-width="2" opacity="0.5"/>
+              <circle cx="190" cy="410" r="15" fill="none" stroke="#ff6a00" stroke-width="1" opacity="0.3"/>
+              
+              <!-- Techno Stage -->
+              <rect x="350" y="240" width="140" height="100" rx="8" fill="#ff6a00" opacity="0.06" stroke="#ff6a00" stroke-width="2" stroke-dasharray="6,4"/>
+              <text x="420" y="295" text-anchor="middle" fill="#ffcf4d" font-family="Orbitron" font-size="12" font-weight="600" letter-spacing="2">TECHNO</text>
+              <polygon points="420,255 430,275 410,275" fill="#ff6a00" opacity="0.6"/>
+              
+              <!-- Ambient Stage -->
+              <rect x="630" y="270" width="140" height="100" rx="8" fill="#ff6a00" opacity="0.06" stroke="#ff6a00" stroke-width="2" stroke-dasharray="6,4"/>
+              <text x="700" y="325" text-anchor="middle" fill="#ffcf4d" font-family="Orbitron" font-size="12" font-weight="600" letter-spacing="2">AMBIENT</text>
+              <circle cx="700" cy="295" r="12" fill="none" stroke="#ffcf4d" stroke-width="2" opacity="0.6"/>
+              
+              <!-- Installazioni - triangoli/esagoni -->
+              <!-- Reactive Walls -->
+              <polygon points="260,150 290,200 230,200" fill="#ffcf4d" opacity="0.1" stroke="#ffcf4d" stroke-width="2"/>
+              <text x="260" y="190" text-anchor="middle" fill="#ffcf4d" font-family="Rajdhani" font-size="11" font-weight="600" letter-spacing="1">REACTIVE</text>
+              
+              <!-- Neural Frequencies -->
+              <polygon points="530,120 560,170 500,170" fill="#ffcf4d" opacity="0.1" stroke="#ffcf4d" stroke-width="2"/>
+              <text x="530" y="160" text-anchor="middle" fill="#ffcf4d" font-family="Rajdhani" font-size="10" font-weight="600" letter-spacing="1">NEURAL</text>
+              
+              <!-- Generative Dreams -->
+              <polygon points="780,170 810,220 750,220" fill="#ffcf4d" opacity="0.1" stroke="#ffcf4d" stroke-width="2"/>
+              <text x="780" y="210" text-anchor="middle" fill="#ffcf4d" font-family="Rajdhani" font-size="10" font-weight="600" letter-spacing="1">DREAMS</text>
+              
+              <!-- Servizi - quadrati minimal -->
+              <!-- Ingresso -->
+              <rect x="40" y="200" width="70" height="50" rx="4" fill="#333" opacity="0.3" stroke="#666" stroke-width="1"/>
+              <text x="75" y="230" text-anchor="middle" fill="#888" font-family="Rajdhani" font-size="10" letter-spacing="1">INGRESSO</text>
+              
+              <!-- Bar -->
+              <rect x="780" y="380" width="70" height="50" rx="4" fill="#333" opacity="0.3" stroke="#666" stroke-width="1"/>
+              <text x="815" y="410" text-anchor="middle" fill="#888" font-family="Rajdhani" font-size="10" letter-spacing="1">BAR</text>
+              
+              <!-- Toilette -->
+              <rect x="480" y="420" width="70" height="50" rx="4" fill="#333" opacity="0.3" stroke="#666" stroke-width="1"/>
+              <text x="515" y="450" text-anchor="middle" fill="#888" font-family="Rajdhani" font-size="10" letter-spacing="1">WC</text>
+              
+              <!-- Linee di connessione tra zone -->
+              <line x1="190" y1="360" x2="260" y2="200" stroke="#ff6a00" stroke-width="1" opacity="0.3" stroke-dasharray="4,8"/>
+              <line x1="280" y1="360" x2="420" y2="340" stroke="#ff6a00" stroke-width="1" opacity="0.3" stroke-dasharray="4,8"/>
+              <line x1="420" y1="340" x2="530" y2="270" stroke="#ff6a00" stroke-width="1" opacity="0.3" stroke-dasharray="4,8"/>
+              <line x1="490" y1="300" x2="630" y2="320" stroke="#ff6a00" stroke-width="1" opacity="0.3" stroke-dasharray="4,8"/>
+              <line x1="700" y1="370" x2="780" y2="430" stroke="#ff6a00" stroke-width="1" opacity="0.3" stroke-dasharray="4,8"/>
+              
+              <!-- Cerchi concentrici decorativi -->
+              <circle cx="450" cy="250" r="200" fill="none" stroke="#ff6a00" stroke-width="0.5" opacity="0.15"/>
+              <circle cx="450" cy="250" r="150" fill="none" stroke="#ff6a00" stroke-width="0.5" opacity="0.1"/>
+              <circle cx="450" cy="250" r="100" fill="none" stroke="#ffcf4d" stroke-width="0.5" opacity="0.08"/>
+              
+              <!-- Elementi decorativi angoli -->
+              <line x1="20" y1="20" x2="60" y2="20" stroke="#ff6a00" stroke-width="2" opacity="0.5"/>
+              <line x1="20" y1="20" x2="20" y2="60" stroke="#ff6a00" stroke-width="2" opacity="0.5"/>
+              <line x1="880" y1="20" x2="840" y2="20" stroke="#ff6a00" stroke-width="2" opacity="0.5"/>
+              <line x1="880" y1="20" x2="880" y2="60" stroke="#ff6a00" stroke-width="2" opacity="0.5"/>
+              <line x1="20" y1="480" x2="60" y2="480" stroke="#ff6a00" stroke-width="2" opacity="0.5"/>
+              <line x1="20" y1="480" x2="20" y2="440" stroke="#ff6a00" stroke-width="2" opacity="0.5"/>
+              <line x1="880" y1="480" x2="840" y2="480" stroke="#ff6a00" stroke-width="2" opacity="0.5"/>
+              <line x1="880" y1="480" x2="880" y2="440" stroke="#ff6a00" stroke-width="2" opacity="0.5"/>
+            </svg>
+            <!-- Zone markers -->
+            <div class="map-zone-marker" style="left: 18%; top: 78%;" data-zone="mainstage" data-shape="cone">
+              <div class="marker-pin"></div>
+              <div class="marker-label">Main Stage</div>
+            </div>
+            <div class="map-zone-marker" style="left: 45%; top: 55%;" data-zone="technostage" data-shape="octahedron">
+              <div class="marker-pin"></div>
+              <div class="marker-label">Techno Stage</div>
+            </div>
+            <div class="map-zone-marker" style="left: 72%; top: 62%;" data-zone="ambientstage" data-shape="icosahedron">
+              <div class="marker-pin"></div>
+              <div class="marker-label">Ambient Stage</div>
+            </div>
+            <div class="map-zone-marker" style="left: 30%; top: 35%;" data-zone="reactivewalls" data-shape="plane">
+              <div class="marker-pin" style="background:#ffcf4d; box-shadow:0 0 15px rgba(255,207,77,0.6);"></div>
+              <div class="marker-label">Reactive Walls</div>
+            </div>
+            <div class="map-zone-marker" style="left: 58%; top: 28%;" data-zone="neuralfreq" data-shape="dodecahedron">
+              <div class="marker-pin" style="background:#ffcf4d; box-shadow:0 0 15px rgba(255,207,77,0.6);"></div>
+              <div class="marker-label">Neural Freq.</div>
+            </div>
+            <div class="map-zone-marker" style="left: 82%; top: 38%;" data-zone="generative" data-shape="sphere">
+              <div class="marker-pin" style="background:#ffcf4d; box-shadow:0 0 15px rgba(255,207,77,0.6);"></div>
+              <div class="marker-label">Generative Dreams</div>
+            </div>
+            <div class="map-zone-marker" style="left: 8%; top: 45%;" data-zone="ingresso" data-shape="torus">
+              <div class="marker-pin" style="background:#666; box-shadow:0 0 10px rgba(102,102,102,0.5);"></div>
+              <div class="marker-label" style="color:#aaa; text-shadow:none;">Ingresso</div>
+            </div>
+            <div class="map-zone-marker" style="left: 85%; top: 72%;" data-zone="bar" data-shape="cylinder">
+              <div class="marker-pin" style="background:#666; box-shadow:0 0 10px rgba(102,102,102,0.5);"></div>
+              <div class="marker-label" style="color:#aaa; text-shadow:none;">Bar</div>
+            </div>
+            <div class="map-zone-marker" style="left: 55%; top: 82%;" data-zone="toilette" data-shape="box">
+              <div class="marker-pin" style="background:#666; box-shadow:0 0 10px rgba(102,102,102,0.5);"></div>
+              <div class="marker-label" style="color:#aaa; text-shadow:none;">Toilette</div>
+            </div>
           </div>
-          <div class="map-path"></div>
-          <div class="map-row">
-            <div class="map-install">Reactive Walls</div>
-            <div class="map-install">Generative Dreams</div>
-            <div class="map-install">Neural Frequencies</div>
-          </div>
-          <div class="map-path"></div>
-          <div class="map-area">Area Relax & Food</div>
+          <div class="map-3d-overlay" id="map-3d-overlay"></div>
+        </div>
+        <div class="map-legend">
+          <div class="legend-item"><div class="legend-dot stage"></div> Stage</div>
+          <div class="legend-item"><div class="legend-dot install"></div> Installazioni</div>
+          <div class="legend-item"><div class="legend-dot service"></div> Servizi</div>
         </div>
       </div>
     </div>
@@ -1280,6 +1534,7 @@
         <div class="neur-overlay">
           <button class="neur-btn" id="neur-start" onclick="startNeural()">Attiva Webcam</button>
           <button class="neur-btn" id="neur-snap" onclick="takePhoto()" style="display:none;">Scatta!</button>
+          <button class="neur-btn data-mosh-toggle" id="neur-effect-toggle" onclick="toggleEffectMode()" style="display:none;" title="Attiva/disattiva effetto Data Mosh VISION FEST">VISION FEST</button>
           <div class="neur-status" id="neur-status">In attesa di attivazione</div>
           <div class="photo-strip" id="photo-strip"></div>
         </div>
@@ -1786,6 +2041,22 @@
 
     let neurVideo, neuralRunning = false;
 
+    let dataMoshActive = false;
+
+    function toggleEffectMode() {
+      dataMoshActive = !dataMoshActive;
+      const btn = document.getElementById('neur-effect-toggle');
+      if (dataMoshActive) {
+        btn.classList.add('active');
+        btn.textContent = 'VISION FEST ON';
+        setNeurStatus('Data Mosh VISION FEST attivo');
+      } else {
+        btn.classList.remove('active');
+        btn.textContent = 'VISION FEST';
+        setNeurStatus('Effetto classico attivo');
+      }
+    }
+
     function startNeural() {
       if (neuralRunning) return;
 
@@ -1800,6 +2071,7 @@
             document.getElementById('neur-placeholder').style.display = 'none';
             document.getElementById('neur-start').style.display = 'none';
             document.getElementById('neur-snap').style.display = 'inline-block';
+            document.getElementById('neur-effect-toggle').style.display = 'inline-block';
             neuralRunning = true;
             setNeurStatus('Webcam attiva - pronto per lo scatto');
           })
@@ -1827,80 +2099,167 @@
       ctx.drawImage(neurVideo, 0, 0, w, h);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-      const imgData = ctx.getImageData(0, 0, w, h);
-      const d = imgData.data;
+      if (dataMoshActive) {
+        // === DATA MOSH VISION FEST — MODALITA PSICHEDELICA ===
+        const imgData = ctx.getImageData(0, 0, w, h);
+        const d = imgData.data;
+        const tempData = new Uint8ClampedArray(d);
 
-      for (let y = 0; y < h; y += 2) {
-        if (Math.random() < 0.15) {
-          const offset = (Math.random() - 0.5) * 60;
+        // 1. CHROMATIC ABERRATION (scissione RGB)
+        for (let y = 0; y < h; y++) {
           const rowStart = y * w * 4;
-          const shifted = new Uint8ClampedArray(w * 4);
+          const shiftR = Math.floor(Math.sin(y * 0.05) * 8 + Math.random() * 6);
+          const shiftB = Math.floor(Math.cos(y * 0.05) * -8 - Math.random() * 6);
           for (let x = 0; x < w; x++) {
-            const sx = Math.floor(x + offset);
-            if (sx >= 0 && sx < w) {
+            const px = x * 4;
+            const rSrc = Math.min(w - 1, Math.max(0, x + shiftR));
+            const bSrc = Math.min(w - 1, Math.max(0, x + shiftB));
+            d[rowStart + px] = tempData[rowStart + rSrc * 4];     // R spostato
+            d[rowStart + px + 1] = tempData[rowStart + px + 1];  // G originale
+            d[rowStart + px + 2] = tempData[rowStart + bSrc * 4 + 2]; // B spostato
+          }
+        }
+
+        // 2. GLITCH BLOCKS (blocchi di pixel spostati violentemente)
+        const blockCount = 15 + Math.floor(Math.random() * 20);
+        for (let i = 0; i < blockCount; i++) {
+          const by = Math.floor(Math.random() * (h - 30));
+          const bh = 5 + Math.floor(Math.random() * 25);
+          const bx = Math.floor(Math.random() * (w - 40));
+          const bw = 10 + Math.floor(Math.random() * 80);
+          const shiftX = Math.floor((Math.random() - 0.5) * 120);
+          const shiftY = Math.floor((Math.random() - 0.5) * 60);
+
+          for (let y = by; y < Math.min(h, by + bh); y++) {
+            const rowStart = y * w * 4;
+            const srcY = Math.max(0, Math.min(h - 1, y + shiftY));
+            const srcRow = srcY * w * 4;
+            for (let x = bx; x < Math.min(w, bx + bw); x++) {
+              const srcX = Math.max(0, Math.min(w - 1, x + shiftX));
+              const px = x * 4;
+              const srcPx = srcX * 4;
+              d[rowStart + px] = tempData[srcRow + srcPx];
+              d[rowStart + px + 1] = tempData[srcRow + srcPx + 1];
+              d[rowStart + px + 2] = tempData[srcRow + srcPx + 2];
+            }
+          }
+        }
+
+        // 3. ROW SHUFFLE PSICHEDELICO (onde di distorsione)
+        for (let y = 0; y < h; y += 1) {
+          if (Math.random() < 0.25) {
+            const wave = Math.sin(y * 0.08) * 40 + Math.cos(y * 0.13) * 25;
+            const offset = Math.floor(wave + (Math.random() - 0.5) * 30);
+            const rowStart = y * w * 4;
+            const shifted = new Uint8ClampedArray(w * 4);
+            for (let x = 0; x < w; x++) {
+              const sx = ((x + offset) % w + w) % w;
               shifted[x * 4] = d[rowStart + sx * 4];
               shifted[x * 4 + 1] = d[rowStart + sx * 4 + 1];
               shifted[x * 4 + 2] = d[rowStart + sx * 4 + 2];
               shifted[x * 4 + 3] = d[rowStart + sx * 4 + 3];
-            } else {
-              shifted[x * 4] = shifted[x * 4 + 1] = shifted[x * 4 + 2] = 0;
-              shifted[x * 4 + 3] = 255;
+            }
+            for (let x = 0; x < w * 4; x++) d[rowStart + x] = shifted[x];
+          }
+        }
+
+        // 4. COLOR INVERSION + NEON GLOW su zone random
+        for (let y = 0; y < h; y += 2) {
+          if (Math.random() < 0.18) {
+            const rowStart = y * w * 4;
+            const invert = Math.random() > 0.5;
+            const hueShift = Math.floor(Math.random() * 360);
+            for (let x = 0; x < w * 4; x += 4) {
+              let r = d[rowStart + x];
+              let g = d[rowStart + x + 1];
+              let b = d[rowStart + x + 2];
+              if (invert) {
+                r = 255 - r;
+                g = 255 - g;
+                b = 255 - b;
+              }
+              // Saturazione esplosiva
+              const avg = (r + g + b) / 3;
+              r = Math.min(255, r * 1.8 - avg * 0.6 + 20);
+              g = Math.min(255, g * 1.4 - avg * 0.3 + (hueShift % 2 === 0 ? 40 : -20));
+              b = Math.min(255, b * 1.6 - avg * 0.4 + (hueShift % 3 === 0 ? 60 : -10));
+              d[rowStart + x] = r;
+              d[rowStart + x + 1] = g;
+              d[rowStart + x + 2] = b;
             }
           }
-          for (let x = 0; x < w * 4; x++) d[rowStart + x] = shifted[x];
         }
 
-        if (Math.random() < 0.12) {
-          const rowStart = y * w * 4;
-          for (let x = 0; x < w * 4; x += 4) {
-            const r = d[rowStart + x];
-            const g = d[rowStart + x + 1];
-            const b = d[rowStart + x + 2];
-            d[rowStart + x] = Math.min(255, r * 1.2 + 30);
-            d[rowStart + x + 1] = Math.min(255, g * 0.7);
-            d[rowStart + x + 2] = Math.min(255, b * 0.3);
+        // 5. SCANLINE INTERFERENCE + VIBRATIONS
+        for (let y = 0; y < h - 2; y += 3) {
+          if (Math.random() < 0.4) {
+            const rowStart = y * w * 4;
+            const nextRow = (y + 1) * w * 4;
+            const nextNextRow = (y + 2) * w * 4;
+            for (let x = 0; x < w * 4; x += 4) {
+              // Media con righe adiacenti (effetto smear)
+              d[rowStart + x] = (d[rowStart + x] + d[nextRow + x]) / 2;
+              d[rowStart + x + 1] = (d[rowStart + x + 1] + d[nextNextRow + x + 1]) / 2;
+              d[rowStart + x + 2] = (d[rowStart + x + 2] + d[nextRow + x + 2] + d[nextNextRow + x + 2]) / 3;
+            }
           }
         }
 
-        if (Math.random() < 0.08 && y + 1 < h) {
-          const rowStart = y * w * 4;
-          const nextRow = (y + 1) * w * 4;
-          for (let x = 0; x < w * 4; x++) {
-            const temp = d[rowStart + x];
-            d[rowStart + x] = d[nextRow + x];
-            d[nextRow + x] = temp;
+        // 6. PIXEL CORRUPTION INTENSA (noise psichedelico)
+        for (let i = 0; i < d.length; i += 4) {
+          const noise = Math.random();
+          if (noise < 0.02) {
+            // Pixel completamente random neon
+            d[i] = Math.random() > 0.5 ? 255 : Math.floor(Math.random() * 100);
+            d[i + 1] = Math.random() > 0.7 ? 255 : Math.floor(Math.random() * 80);
+            d[i + 2] = Math.random() > 0.6 ? 255 : Math.floor(Math.random() * 50);
+          } else if (noise < 0.05) {
+            // Satura al massimo
+            const max = Math.max(d[i], d[i + 1], d[i + 2]);
+            if (max > 150) {
+              d[i] = Math.min(255, d[i] * 1.5);
+              d[i + 1] = Math.min(255, d[i + 1] * 1.3);
+              d[i + 2] = Math.min(255, d[i + 2] * 1.4);
+            }
           }
         }
-      }
 
-      for (let y = 0; y < h; y += 3) {
-        const rowStart = y * w * 4;
-        for (let x = 0; x < w * 4; x += 4) {
-          d[rowStart + x] = Math.min(255, d[rowStart + x] + 20);
-          d[rowStart + x + 1] = Math.max(0, d[rowStart + x + 1] - 30);
-          d[rowStart + x + 2] = Math.max(0, d[rowStart + x + 2] - 20);
+        // 7. WAVE DISPLACEMENT VERTICALE
+        const waveData = new Uint8ClampedArray(d);
+        for (let y = 0; y < h; y++) {
+          const displacement = Math.floor(Math.sin(y * 0.02) * 15 + Math.sin(y * 0.07) * 8);
+          const targetY = Math.max(0, Math.min(h - 1, y + displacement));
+          const srcRow = y * w * 4;
+          const dstRow = targetY * w * 4;
+          if (displacement !== 0) {
+            for (let x = 0; x < w * 4; x++) {
+              d[dstRow + x] = (d[dstRow + x] * 0.3 + waveData[srcRow + x] * 0.7);
+            }
+          }
         }
-      }
 
-      for (let i = 0; i < d.length; i += 4) {
-        if (Math.random() < 0.005) {
-          d[i] = 255;
-          d[i + 1] = 100;
-          d[i + 2] = 0;
+        ctx.putImageData(imgData, 0, 0);
+
+        // 8. SCANLINE CRT + GLOW FINALE
+        ctx.globalCompositeOperation = 'screen';
+        for (let y = 0; y < h; y += 3) {
+          ctx.fillStyle = `rgba(255, ${50 + Math.random() * 100}, 0, ${0.02 + Math.random() * 0.03})`;
+          ctx.fillRect(0, y, w, 2);
         }
-      }
+        ctx.globalCompositeOperation = 'source-over';
 
-      ctx.putImageData(imgData, 0, 0);
+        // Bordi vignetta psichedelica
+        const vignette = ctx.createRadialGradient(w / 2, h / 2, w * 0.3, w / 2, h / 2, w * 0.8);
+        vignette.addColorStop(0, 'rgba(255, 100, 0, 0)');
+        vignette.addColorStop(0.7, 'rgba(255, 50, 150, 0.08)');
+        vignette.addColorStop(1, 'rgba(100, 0, 255, 0.2)');
+        ctx.fillStyle = vignette;
+        ctx.fillRect(0, 0, w, h);
 
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
-      for (let y = 0; y < h; y += 4) {
-        ctx.fillRect(0, y, w, 1);
-      }
-
-      ctx.fillStyle = 'rgba(255, 106, 0, 0.04)';
-      for (let y = 2; y < h; y += 4) {
-        ctx.fillRect(0, y, w, 1);
+        setNeurStatus('🔥 DATA MOSH PSICHEDELICO ATTIVO!');
+      } else {
+        // Foto normale
+        setNeurStatus('Scattata!');
       }
 
       const dataURL = c.toDataURL('image/jpeg', 0.9);
@@ -1994,6 +2353,410 @@
 
       requestAnimationFrame(draw);
     }
+
+    /* MAPPA INTERATTIVA 2D -> 3D */
+    let map3DRenderer = null;
+    let map3DScene = null;
+    let map3DCamera = null;
+    let map3DAnimFrame = null;
+    let map3DBuildings = [];
+    let map3DActive = false;
+
+    function initMap3D() {
+      const container = document.getElementById('map-3d-overlay');
+      if (!container || map3DRenderer) return;
+
+      map3DScene = new THREE.Scene();
+      map3DScene.background = new THREE.Color(0x0a0a0f);
+      map3DScene.fog = new THREE.FogExp2(0x0a0a0f, 0.008);
+
+      const w = container.clientWidth || 900;
+      const h = container.clientHeight || 500;
+      map3DCamera = new THREE.PerspectiveCamera(50, w / h, 0.1, 1000);
+      map3DCamera.position.set(0, 100, 140);
+      map3DCamera.lookAt(0, 15, 0);
+
+      map3DRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      map3DRenderer.setSize(w, h);
+      map3DRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.innerHTML = '';
+      container.appendChild(map3DRenderer.domElement);
+
+      // Luci multiple
+      const ambient = new THREE.AmbientLight(0xff6a00, 0.3);
+      map3DScene.add(ambient);
+      
+      const dirLight = new THREE.DirectionalLight(0xff8a3d, 1.2);
+      dirLight.position.set(60, 120, 60);
+      dirLight.castShadow = true;
+      map3DScene.add(dirLight);
+      
+      const pointLight1 = new THREE.PointLight(0xff6a00, 2, 150);
+      pointLight1.position.set(-40, 60, -40);
+      map3DScene.add(pointLight1);
+      
+      const pointLight2 = new THREE.PointLight(0xffcf4d, 1.5, 150);
+      pointLight2.position.set(50, 40, 50);
+      map3DScene.add(pointLight2);
+      
+      const pointLight3 = new THREE.PointLight(0xff2d00, 1, 100);
+      pointLight3.position.set(0, 80, 0);
+      map3DScene.add(pointLight3);
+
+      // Piano base olografico
+      const groundGeo = new THREE.PlaneGeometry(300, 200);
+      const groundMat = new THREE.MeshStandardMaterial({ 
+        color: 0x111827, 
+        roughness: 0.8,
+        metalness: 0.5,
+        emissive: 0xff6a00,
+        emissiveIntensity: 0.02
+      });
+      const ground = new THREE.Mesh(groundGeo, groundMat);
+      ground.rotation.x = -Math.PI / 2;
+      ground.position.y = -2;
+      map3DScene.add(ground);
+
+      // Griglia strade al neon
+      const gridHelper = new THREE.GridHelper(300, 30, 0xff6a00, 0x1f2937);
+      gridHelper.position.y = -1;
+      gridHelper.material.opacity = 0.4;
+      gridHelper.material.transparent = true;
+      map3DScene.add(gridHelper);
+      
+      // Linee stradari extra
+      const roadGeo1 = new THREE.BoxGeometry(300, 0.2, 4);
+      const roadMat1 = new THREE.MeshBasicMaterial({ color: 0xff6a00, transparent: true, opacity: 0.15 });
+      const road1 = new THREE.Mesh(roadGeo1, roadMat1);
+      road1.position.set(0, -0.5, 0);
+      map3DScene.add(road1);
+      
+      const roadGeo2 = new THREE.BoxGeometry(4, 0.2, 200);
+      const road2 = new THREE.Mesh(roadGeo2, roadMat1);
+      road2.position.set(0, -0.5, 0);
+      map3DScene.add(road2);
+      
+      const roadGeo3 = new THREE.BoxGeometry(250, 0.2, 3);
+      const roadMat2 = new THREE.MeshBasicMaterial({ color: 0xffcf4d, transparent: true, opacity: 0.1 });
+      const road3 = new THREE.Mesh(roadGeo3, roadMat2);
+      road3.position.set(0, -0.5, 30);
+      map3DScene.add(road3);
+
+      // Funzione per creare edifici dettagliati
+      function createDetailedBuilding(x, z, w, d, h, type = 'normal') {
+        const group = new THREE.Group();
+        
+        // Colore base arancione/marrone caldo
+        const hue = 0.06 + Math.random() * 0.04;
+        const baseColor = new THREE.Color().setHSL(hue, 0.8, 0.12 + Math.random() * 0.08);
+        const glowColor = new THREE.Color().setHSL(hue + 0.02, 1, 0.5);
+        
+        // Corpo principale
+        const bodyGeo = new THREE.BoxGeometry(w, h, d);
+        const bodyMat = new THREE.MeshStandardMaterial({
+          color: baseColor,
+          roughness: 0.6,
+          metalness: 0.4,
+          emissive: glowColor,
+          emissiveIntensity: 0.08
+        });
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        body.position.y = h / 2;
+        body.castShadow = true;
+        group.add(body);
+        
+        // Dettaglio: cornice superiore
+        const topFrameGeo = new THREE.BoxGeometry(w + 1, 2, d + 1);
+        const topFrameMat = new THREE.MeshStandardMaterial({
+          color: 0xff6a00,
+          emissive: 0xff6a00,
+          emissiveIntensity: 0.3,
+          roughness: 0.3,
+          metalness: 0.8
+        });
+        const topFrame = new THREE.Mesh(topFrameGeo, topFrameMat);
+        topFrame.position.y = h + 1;
+        group.add(topFrame);
+        
+        // Dettaglio: antenne / elementi sul tetto
+        if (Math.random() > 0.5) {
+          const antennaGeo = new THREE.CylinderGeometry(0.3, 0.5, 8 + Math.random() * 12, 6);
+          const antennaMat = new THREE.MeshStandardMaterial({
+            color: 0xffcf4d,
+            emissive: 0xffcf4d,
+            emissiveIntensity: 0.5,
+            metalness: 0.9,
+            roughness: 0.1
+          });
+          const antenna = new THREE.Mesh(antennaGeo, antennaMat);
+          antenna.position.set((Math.random() - 0.5) * w * 0.5, h + 4 + 4, (Math.random() - 0.5) * d * 0.5);
+          group.add(antenna);
+          
+          // Luce antenna
+          const antennaLight = new THREE.PointLight(0xffcf4d, 1, 20);
+          antennaLight.position.copy(antenna.position);
+          antennaLight.position.y += 6;
+          group.add(antennaLight);
+        }
+        
+        // Dettaglio: finestre (righe orizzontali luminose)
+        const floors = Math.floor(h / 8);
+        for (let f = 1; f < floors; f++) {
+          const windowGeo = new THREE.BoxGeometry(w * 0.85, 0.4, d * 0.9);
+          const windowMat = new THREE.MeshStandardMaterial({
+            color: 0xff8a3d,
+            emissive: 0xff8a3d,
+            emissiveIntensity: 0.4 + Math.random() * 0.3,
+            transparent: true,
+            opacity: 0.8
+          });
+          const windowStrip = new THREE.Mesh(windowGeo, windowMat);
+          windowStrip.position.y = f * (h / floors);
+          group.add(windowStrip);
+        }
+        
+        // Bordo wireframe
+        const edges = new THREE.EdgesGeometry(bodyGeo);
+        const edgeMat = new THREE.LineBasicMaterial({ 
+          color: 0xff6a00, 
+          transparent: true, 
+          opacity: 0.4 + Math.random() * 0.3 
+        });
+        const wireframe = new THREE.LineSegments(edges, edgeMat);
+        wireframe.position.y = h / 2;
+        group.add(wireframe);
+        
+        // Per tipo speciale, aggiungi elementi extra
+        if (type === 'tower') {
+          // Torre centrale
+          const towerGeo = new THREE.CylinderGeometry(w * 0.25, w * 0.35, h * 1.4, 8);
+          const towerMat = new THREE.MeshStandardMaterial({
+            color: 0xff6a00,
+            emissive: 0xff6a00,
+            emissiveIntensity: 0.2,
+            metalness: 0.7,
+            roughness: 0.2
+          });
+          const tower = new THREE.Mesh(towerGeo, towerMat);
+          tower.position.y = h * 0.7;
+          group.add(tower);
+          
+          // Punta della torre
+          const tipGeo = new THREE.ConeGeometry(w * 0.25, 12, 8);
+          const tipMat = new THREE.MeshStandardMaterial({
+            color: 0xffcf4d,
+            emissive: 0xffcf4d,
+            emissiveIntensity: 0.8,
+            metalness: 0.9,
+            roughness: 0.1
+          });
+          const tip = new THREE.Mesh(tipGeo, tipMat);
+          tip.position.y = h * 1.4 + 6;
+          group.add(tip);
+        }
+        
+        if (type === 'complex') {
+          // Ala laterale
+          const wingGeo = new THREE.BoxGeometry(w * 0.6, h * 0.7, d * 0.4);
+          const wing = new THREE.Mesh(wingGeo, bodyMat);
+          wing.position.set(w * 0.5, h * 0.35, d * 0.3);
+          group.add(wing);
+          
+          const wingEdges = new THREE.EdgesGeometry(wingGeo);
+          const wingWire = new THREE.LineSegments(wingEdges, edgeMat);
+          wingWire.position.copy(wing.position);
+          group.add(wingWire);
+        }
+        
+        if (type === 'platform') {
+          // Piattaforma sul tetto
+          const platGeo = new THREE.CylinderGeometry(w * 0.4, w * 0.4, 3, 6);
+          const platMat = new THREE.MeshStandardMaterial({
+            color: 0xff8a3d,
+            emissive: 0xff8a3d,
+            emissiveIntensity: 0.5,
+            metalness: 0.8
+          });
+          const plat = new THREE.Mesh(platGeo, platMat);
+          plat.position.y = h + 1.5;
+          group.add(plat);
+          
+          // Colonne sotto piattaforma
+          for (let i = 0; i < 4; i++) {
+            const colGeo = new THREE.CylinderGeometry(0.4, 0.4, 4, 6);
+            const col = new THREE.Mesh(colGeo, platMat);
+            const angle = (i / 4) * Math.PI * 2;
+            col.position.set(
+              Math.cos(angle) * w * 0.25,
+              h - 1,
+              Math.sin(angle) * d * 0.25
+            );
+            group.add(col);
+          }
+        }
+        
+        group.position.set(x, 0, z);
+        map3DScene.add(group);
+        
+        // Ritorna il body per l'animazione pulse
+        return body;
+      }
+
+      // Crea edifici dettagliati
+      const buildingConfigs = [
+        { x: -80, z: -40, w: 18, d: 14, h: 35, type: 'tower' },
+        { x: -50, z: -50, w: 14, d: 18, h: 45, type: 'tower' },
+        { x: -20, z: -35, w: 20, d: 16, h: 28, type: 'complex' },
+        { x: -60, z: -5, w: 16, d: 16, h: 38, type: 'normal' },
+        { x: -85, z: 15, w: 14, d: 12, h: 22, type: 'platform' },
+        { x: 25, z: -50, w: 22, d: 18, h: 50, type: 'tower' },
+        { x: 55, z: -40, w: 16, d: 22, h: 32, type: 'complex' },
+        { x: 85, z: -45, w: 14, d: 14, h: 26, type: 'normal' },
+        { x: 40, z: -5, w: 20, d: 16, h: 42, type: 'tower' },
+        { x: 70, z: 5, w: 18, d: 18, h: 30, type: 'platform' },
+        { x: 90, z: 20, w: 14, d: 16, h: 24, type: 'normal' },
+        { x: -35, z: 25, w: 24, d: 16, h: 55, type: 'tower' },
+        { x: -5, z: 30, w: 18, d: 22, h: 40, type: 'complex' },
+        { x: 30, z: 35, w: 20, d: 14, h: 32, type: 'normal' },
+        { x: 60, z: 40, w: 16, d: 18, h: 28, type: 'platform' },
+        { x: -70, z: 45, w: 14, d: 14, h: 35, type: 'tower' },
+        { x: -40, z: 55, w: 22, d: 16, h: 26, type: 'normal' },
+        { x: 10, z: 60, w: 18, d: 20, h: 45, type: 'tower' },
+        { x: 45, z: 55, w: 16, d: 16, h: 30, type: 'complex' },
+        { x: 80, z: 50, w: 14, d: 14, h: 22, type: 'normal' },
+        // Edifici extra per densità
+        { x: -15, z: -10, w: 12, d: 12, h: 20, type: 'normal' },
+        { x: 15, z: 10, w: 14, d: 10, h: 18, type: 'platform' },
+        { x: -90, z: -10, w: 10, d: 14, h: 24, type: 'normal' },
+        { x: 95, z: -10, w: 12, d: 12, h: 28, type: 'tower' },
+      ];
+
+      buildingConfigs.forEach(bp => {
+        const mesh = createDetailedBuilding(bp.x, bp.z, bp.w, bp.d, bp.h, bp.type);
+        map3DBuildings.push(mesh);
+      });
+
+      // Strade al neon (linee luminose)
+      const streetLines = [
+        { x1: -140, z1: 0, x2: 140, z2: 0 },
+        { x1: 0, z1: -90, x2: 0, z2: 90 },
+        { x1: -100, z1: 30, x2: 100, z2: 30 },
+        { x1: -100, z1: -30, x2: 100, z2: -30 },
+      ];
+      
+      streetLines.forEach(line => {
+        const lineGeo = new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(line.x1, 0.1, line.z1),
+          new THREE.Vector3(line.x2, 0.1, line.z2)
+        ]);
+        const lineMat = new THREE.LineBasicMaterial({ 
+          color: 0xff6a00, 
+          transparent: true, 
+          opacity: 0.3 
+        });
+        const lineMesh = new THREE.Line(lineGeo, lineMat);
+        map3DScene.add(lineMesh);
+      });
+
+      // Luci nelle strade
+      const streetLightsGeo = new THREE.BufferGeometry();
+      const streetPositions = [];
+      for (let i = 0; i < 80; i++) {
+        streetPositions.push(
+          (Math.random() - 0.5) * 260,
+          0.5,
+          (Math.random() - 0.5) * 160
+        );
+      }
+      streetLightsGeo.setAttribute('position', new THREE.Float32BufferAttribute(streetPositions, 3));
+      const streetLightsMat = new THREE.PointsMaterial({ 
+        color: 0xffcf4d, 
+        size: 2, 
+        transparent: true, 
+        opacity: 0.9 
+      });
+      const streetLights = new THREE.Points(streetLightsGeo, streetLightsMat);
+      map3DScene.add(streetLights);
+
+      // Particelle atmosferiche
+      const particleGeo = new THREE.BufferGeometry();
+      const particlePositions = [];
+      for (let i = 0; i < 200; i++) {
+        particlePositions.push(
+          (Math.random() - 0.5) * 300,
+          Math.random() * 100,
+          (Math.random() - 0.5) * 200
+        );
+      }
+      particleGeo.setAttribute('position', new THREE.Float32BufferAttribute(particlePositions, 3));
+      const particleMat = new THREE.PointsMaterial({
+        color: 0xff6a00,
+        size: 0.8,
+        transparent: true,
+        opacity: 0.6
+      });
+      const particles = new THREE.Points(particleGeo, particleMat);
+      map3DScene.add(particles);
+
+      function animateMap3D() {
+        if (!map3DActive) return;
+        map3DAnimFrame = requestAnimationFrame(animateMap3D);
+
+        const time = Date.now() * 0.0005;
+        
+        // Camera orbita lenta
+        const radius = 160;
+        const height = 100 + Math.sin(time * 0.5) * 20;
+        map3DCamera.position.x = Math.sin(time * 0.15) * radius;
+        map3DCamera.position.z = Math.cos(time * 0.15) * radius;
+        map3DCamera.position.y = height;
+        map3DCamera.lookAt(0, 20, 0);
+
+        // Pulse edifici
+        map3DBuildings.forEach((b, i) => {
+          if (b.material) {
+            b.material.emissiveIntensity = 0.08 + Math.sin(time * 2 + i * 0.5) * 0.06;
+          }
+        });
+        
+        // Particelle fluttuanti
+        particles.rotation.y += 0.001;
+
+        if (map3DRenderer && map3DScene && map3DCamera) {
+          map3DRenderer.render(map3DScene, map3DCamera);
+        }
+      }
+
+      animateMap3D();
+    }
+
+    function disposeMap3D() {
+      if (map3DAnimFrame) {
+        cancelAnimationFrame(map3DAnimFrame);
+        map3DAnimFrame = null;
+      }
+      if (map3DRenderer) {
+        try { map3DRenderer.dispose(); } catch(e) {}
+        map3DRenderer = null;
+      }
+      map3DBuildings = [];
+      map3DActive = false;
+    }
+
+    const mapContainer = document.getElementById('festival-map-container');
+    if (mapContainer) {
+      mapContainer.addEventListener('mouseenter', () => {
+        document.getElementById('map-3d-overlay').classList.add('active');
+        map3DActive = true;
+        initMap3D();
+      });
+      mapContainer.addEventListener('mouseleave', () => {
+        document.getElementById('map-3d-overlay').classList.remove('active');
+        disposeMap3D();
+      });
+    }
+
+    /* FINE MAPPA INTERATTIVA */
 
     draw();
   </script>
