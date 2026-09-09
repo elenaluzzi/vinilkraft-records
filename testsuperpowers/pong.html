@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong - Vinilkraft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="pong.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="crt-overlay">
+            <div class="scanlines"></div>
+            <div class="vignette"></div>
+        </div>
+
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+        <!-- Menu Overlay -->
+        <div id="menuOverlay" class="overlay active">
+            <h1 class="game-title">PONG</h1>
+            <button id="startBtn" class="retro-btn">INIZIA PARTITA</button>
+            <div class="instructions">
+                <p>Giocatore 1: W / S</p>
+                <p>Giocatore 2: &#8593; / &#8595;</p>
+                <p>Pausa: P</p>
+            </div>
+            <a href="index.html" class="back-link">&#8592; Torna al sito</a>
+        </div>
+
+        <!-- Pause Overlay -->
+        <div id="pauseOverlay" class="overlay">
+            <h2 class="pause-title">PAUSA</h2>
+            <p>Premi P per riprendere</p>
+        </div>
+
+        <!-- Victory Overlay -->
+        <div id="victoryOverlay" class="overlay">
+            <h2 id="victoryText" class="victory-title">GIOCATORE 1 VINCE!</h2>
+            <p id="finalScore" class="final-score">0 - 0</p>
+            <button id="restartBtn" class="retro-btn">RIGIOCA</button>
+        </div>
+    </div>
+
+    <script src="pong.js"></script>
+</body>
+</html>
