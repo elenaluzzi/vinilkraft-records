@@ -20,6 +20,7 @@ try {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x050705, 1);
+  renderer.sortObjects = true;
 } catch (e) {
   showWebglError();
   throw e;
@@ -36,39 +37,47 @@ const uniforms = {
 
 const mat = new THREE.ShaderMaterial({
   transparent: true,
+  depthWrite: false,
+  side: THREE.DoubleSide,
   uniforms,
   vertexShader: `
     varying vec2 vUv;
+    varying float vLift;
     void main() {
       vUv = uv;
+      vLift = position.z;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
   `,
   fragmentShader: `
     varying vec2 vUv;
+    varying float vLift;
     uniform float uTime;
     void main() {
       vec2 p = vUv * 2.0 - 1.0;
       float r = length(p);
-      if (r > 1.0 || r < 0.035) discard;
-      float grooves = 0.5 + 0.5 * sin(r * 78.0);
-      float label = smoothstep(0.28, 0.18, r);
+      if (r > 1.0 || r < 0.028) discard;
+      float grooves = 0.7 + 0.3 * sin(r * 28.0 + vLift * 6.0);
+      float label = smoothstep(0.24, 0.14, r);
       vec3 irid = vec3(
-        0.2 + 0.45 * sin(r * 12.0 + uTime),
-        0.8 + 0.2 * sin(r * 9.0 - p.x * 3.0),
-        0.4 + 0.45 * sin(p.y * 8.0 + uTime * 0.7)
+        0.45 + 0.4 * sin(r * 6.0 + uTime * 0.6),
+        0.95 + 0.12 * sin(r * 4.0 - p.x * 2.0),
+        0.65 + 0.35 * sin(p.y * 4.0 + uTime * 0.4)
       );
-      vec3 green = vec3(0.2, 1.0, 0.4);
-      vec3 labelCol = vec3(0.08, 0.42, 0.18);
-      vec3 col = mix(irid * 0.5 + green * 0.45 * grooves, labelCol, label);
-      float alpha = mix(0.62, 0.95, label);
-      float edge = smoothstep(1.0, 0.96, r);
-      gl_FragColor = vec4(col, alpha * edge);
+      vec3 jelly = vec3(0.35, 1.0, 0.55);
+      vec3 labelCol = vec3(0.18, 0.7, 0.38);
+      vec3 col = mix(irid * 0.28 + jelly * 0.32 * grooves, labelCol, label * 0.4);
+      float rim = smoothstep(0.62, 1.0, r);
+      float alpha = mix(0.09, 0.26, rim);
+      alpha = mix(alpha, 0.18, label);
+      alpha += abs(vLift) * 0.18;
+      float edge = smoothstep(1.0, 0.88, r);
+      gl_FragColor = vec4(col, clamp(alpha, 0.05, 0.32) * edge);
     }
   `
 });
 
-const geo = new THREE.CircleGeometry(DISC_RADIUS, 96);
+const geo = new THREE.CircleGeometry(DISC_RADIUS, 160);
 const rest = Float32Array.from(geo.attributes.position.array);
 const disc = new THREE.Mesh(geo, mat);
 disc.rotation.x = -Math.PI / 2.35;
@@ -85,7 +94,7 @@ window.addEventListener('resize', resize);
 resize();
 
 const clock = new THREE.Clock();
-const ROT_SPEED = 0.55;
+const ROT_SPEED = 0.38;
 const raycaster = new THREE.Raycaster();
 const ndc = new THREE.Vector2();
 const pointer = { x: 0, y: 0, active: false };
@@ -95,6 +104,8 @@ let schiaccia = 0;
 let piegaSm = 0;
 let dirSmX = 0;
 let dirSmY = 0;
+let wobble = 0;
+let wobbleVel = 0;
 let firstGesture = false;
 
 export function getRotationY() {
@@ -136,31 +147,38 @@ function applyDeform(now, dt) {
   const piegaTarget = pointer.active ? pointerBendIntensity(dist) : 0;
   schiaccia = squashAmount(now - tapAt);
   const dir = bendDirection(pointer.x, pointer.y);
-  const follow = 1 - Math.exp(-dt * 8);
+  const follow = 1 - Math.exp(-dt * 2.6);
+  const prev = piegaSm;
   piegaSm += (piegaTarget - piegaSm) * follow;
   dirSmX += (dir.x - dirSmX) * follow;
   dirSmY += (dir.y - dirSmY) * follow;
+  wobbleVel += (piegaSm - prev) * 16;
+  wobbleVel += -wobble * 20 * dt;
+  wobbleVel *= Math.exp(-dt * 2.8);
+  wobble += wobbleVel * dt;
   piega = piegaSm;
   const pos = geo.attributes.position;
   const arr = pos.array;
-  const BEND_MAX = 0.42;
-  const SQUASH_MAX = 0.5;
-  const DENT = 0.28;
+  const BEND_MAX = 0.5;
+  const SQUASH_MAX = 0.46;
+  const DENT = 0.38;
   for (let i = 0; i < arr.length; i += 3) {
     const rx = rest[i];
     const ry = rest[i + 1];
     const rz = rest[i + 2];
     const vr = Math.hypot(rx, ry);
-    const rigid = vertexRigidity(vr);
-    const pull = piegaSm * rigid * BEND_MAX;
+    const rigid = Math.pow(vertexRigidity(vr), 0.62);
+    const jelly = Math.sin(vr * 10 - now * 5.5) * 0.5 + Math.sin(vr * 17 + now * 3.2) * 0.5;
+    const pull = (piegaSm + wobble * 0.55) * rigid * BEND_MAX;
     let x = rx + dirSmX * pull;
     let y = ry + dirSmY * pull;
-    const scale = 1 - schiaccia * rigid * SQUASH_MAX;
+    const scale = 1 - schiaccia * rigid * SQUASH_MAX * (1 + jelly * 0.12);
     x *= scale;
     y *= scale;
+    const wave = jelly * rigid * (0.045 + schiaccia * 0.22 + Math.abs(wobble) * 0.12);
     arr[i] = x;
     arr[i + 1] = y;
-    arr[i + 2] = rz - schiaccia * rigid * DENT;
+    arr[i + 2] = rz - schiaccia * rigid * DENT + wave;
   }
   pos.needsUpdate = true;
 }
@@ -173,7 +191,10 @@ canvas.addEventListener('pointerdown', (ev) => {
   pointerOnDiscPlane(ev);
   notifyFirstGesture();
   const dist = Math.hypot(pointer.x, pointer.y);
-  if (pointer.active && isPointerOnDisc(dist)) tapAt = clock.elapsedTime;
+  if (pointer.active && isPointerOnDisc(dist)) {
+    tapAt = clock.elapsedTime;
+    wobbleVel += 2.4;
+  }
 });
 canvas.addEventListener('pointerleave', () => {
   pointer.active = false;
