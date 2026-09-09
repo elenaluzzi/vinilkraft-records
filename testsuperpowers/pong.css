@@ -1,0 +1,190 @@
+/* === Base & Reset === */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #111111;
+    color: #ffffff;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* === Game Container === */
+.game-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    aspect-ratio: 4 / 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* === Canvas === */
+#gameCanvas {
+    background-color: #000000;
+    border: 4px solid #333333;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    display: block;
+}
+
+/* === CRT Overlays === */
+.crt-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Scanlines */
+.scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.03) 0px,
+        rgba(255, 255, 255, 0.03) 2px,
+        transparent 2px,
+        transparent 4px
+    );
+}
+
+/* Vignette */
+.vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle,
+        transparent 60%,
+        rgba(0, 0, 0, 0.6) 100%
+    );
+}
+
+/* === Overlays (Menu, Pause, Victory) === */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 20;
+    text-align: center;
+    padding: 20px;
+}
+
+.overlay.active {
+    display: flex;
+}
+
+/* === Typography & Glow === */
+.game-title {
+    font-size: clamp(2rem, 8vw, 4rem);
+    color: #ffffff;
+    text-shadow:
+        0 0 10px #00ff00,
+        0 0 20px #00ff00,
+        0 0 40px #00ff00;
+    margin-bottom: 40px;
+    letter-spacing: 4px;
+}
+
+.pause-title {
+    font-size: clamp(1.5rem, 6vw, 3rem);
+    color: #ffffff;
+    text-shadow:
+        0 0 10px #ffffff,
+        0 0 20px #ffffff;
+    animation: blink 1s infinite;
+    margin-bottom: 20px;
+}
+
+.victory-title {
+    font-size: clamp(1.2rem, 5vw, 2.5rem);
+    color: #ffffff;
+    text-shadow:
+        0 0 10px #ffaa00,
+        0 0 20px #ffaa00;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.final-score {
+    font-size: clamp(1rem, 4vw, 1.5rem);
+    color: #cccccc;
+    margin-bottom: 30px;
+}
+
+.instructions {
+    margin-top: 30px;
+    font-size: clamp(0.6rem, 2vw, 0.8rem);
+    color: #aaaaaa;
+    line-height: 2;
+}
+
+.back-link {
+    margin-top: 30px;
+    font-size: clamp(0.6rem, 2vw, 0.8rem);
+    color: #888888;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #ffffff;
+}
+
+/* === Retro Button === */
+.retro-btn {
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: clamp(0.7rem, 2.5vw, 1rem);
+    background-color: transparent;
+    color: #ffffff;
+    border: 4px solid #ffffff;
+    padding: 15px 30px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    box-shadow: 4px 4px 0px #333333;
+}
+
+.retro-btn:hover {
+    background-color: #ffffff;
+    color: #000000;
+    box-shadow: 6px 6px 0px #555555;
+    transform: translate(-2px, -2px);
+}
+
+.retro-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #333333;
+}
+
+/* === Animations === */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
