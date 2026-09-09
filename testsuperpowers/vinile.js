@@ -1,7 +1,16 @@
-import { DISC_RADIUS } from './fisica.js';
+import {
+  DISC_RADIUS,
+  pointerBendIntensity,
+  vertexRigidity,
+  isPointerOnDisc,
+  squashAmount,
+  bendDirection
+} from './fisica.js';
+import { unlockAudio, setAudioDeform } from './audio.js';
 
 const canvas = document.getElementById('stage');
 const errore = document.getElementById('errore-webgl');
+const aiuto = document.getElementById('aiuto');
 
 function showWebglError() {
   errore.hidden = false;
@@ -42,17 +51,18 @@ const mat = new THREE.ShaderMaterial({
     void main() {
       vec2 p = vUv * 2.0 - 1.0;
       float r = length(p);
-      if (r > 1.0) discard;
-      float grooves = sin(r * 78.0) * 0.04;
-      float label = smoothstep(0.24, 0.20, r);
+      if (r > 1.0 || r < 0.035) discard;
+      float grooves = 0.5 + 0.5 * sin(r * 78.0);
+      float label = smoothstep(0.28, 0.18, r);
       vec3 irid = vec3(
-        0.15 + 0.35 * sin(r * 12.0 + uTime),
-        0.75 + 0.25 * sin(r * 9.0 - p.x * 3.0),
-        0.35 + 0.4 * sin(p.y * 8.0 + uTime * 0.7)
+        0.2 + 0.45 * sin(r * 12.0 + uTime),
+        0.8 + 0.2 * sin(r * 9.0 - p.x * 3.0),
+        0.4 + 0.45 * sin(p.y * 8.0 + uTime * 0.7)
       );
-      vec3 green = vec3(0.15, 0.95, 0.35);
-      vec3 col = mix(irid * 0.55 + green * 0.35, vec3(0.05, 0.12, 0.08), label);
-      float alpha = mix(0.55 + grooves, 0.92, label);
+      vec3 green = vec3(0.2, 1.0, 0.4);
+      vec3 labelCol = vec3(0.08, 0.42, 0.18);
+      vec3 col = mix(irid * 0.5 + green * 0.45 * grooves, labelCol, label);
+      float alpha = mix(0.62, 0.95, label);
       float edge = smoothstep(1.0, 0.96, r);
       gl_FragColor = vec4(col, alpha * edge);
     }
@@ -60,6 +70,7 @@ const mat = new THREE.ShaderMaterial({
 });
 
 const geo = new THREE.CircleGeometry(DISC_RADIUS, 96);
+const rest = Float32Array.from(geo.attributes.position.array);
 const disc = new THREE.Mesh(geo, mat);
 disc.rotation.x = -Math.PI / 2.35;
 scene.add(disc);
@@ -76,15 +87,98 @@ resize();
 
 const clock = new THREE.Clock();
 const ROT_SPEED = 0.55;
+const raycaster = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+const pointer = { x: 0, y: 0, active: false };
+let tapAt = -999;
+let piega = 0;
+let schiaccia = 0;
+let firstGesture = false;
 
 export function getRotationY() {
   return disc.rotation.z;
 }
 
+export function getDeformState() {
+  return { piega, schiaccia };
+}
+
+export function notifyFirstGesture() {
+  if (firstGesture) return;
+  firstGesture = true;
+  aiuto.hidden = true;
+  unlockAudio();
+}
+
+function pointerOnDiscPlane(ev) {
+  const rect = canvas.getBoundingClientRect();
+  ndc.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
+  ndc.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(ndc, camera);
+  disc.updateWorldMatrix(true, false);
+  const n = new THREE.Vector3(0, 0, 1).applyQuaternion(disc.quaternion);
+  const origin = new THREE.Vector3().setFromMatrixPosition(disc.matrixWorld);
+  const discPlane = new THREE.Plane().setFromNormalAndCoplanarPoint(n, origin);
+  const worldHit = new THREE.Vector3();
+  if (!raycaster.ray.intersectPlane(discPlane, worldHit)) {
+    pointer.active = false;
+    return;
+  }
+  const local = disc.worldToLocal(worldHit.clone());
+  pointer.x = local.x;
+  pointer.y = local.y;
+  pointer.active = true;
+}
+
+function applyDeform(now) {
+  const dist = Math.hypot(pointer.x, pointer.y);
+  piega = pointer.active ? pointerBendIntensity(dist) : 0;
+  schiaccia = squashAmount(now - tapAt);
+  const dir = bendDirection(pointer.x, pointer.y);
+  const pos = geo.attributes.position;
+  const arr = pos.array;
+  const BEND_MAX = 0.42;
+  const SQUASH_MAX = 0.5;
+  for (let i = 0; i < arr.length; i += 3) {
+    const rx = rest[i];
+    const ry = rest[i + 1];
+    const rz = rest[i + 2];
+    const vr = Math.hypot(rx, ry);
+    const rigid = vertexRigidity(vr);
+    const pull = piega * rigid * BEND_MAX;
+    let x = rx + dir.x * pull;
+    let y = ry + dir.y * pull;
+    const scale = 1 - schiaccia * rigid * SQUASH_MAX;
+    x *= scale;
+    y *= scale;
+    arr[i] = x;
+    arr[i + 1] = y;
+    arr[i + 2] = rz;
+  }
+  pos.needsUpdate = true;
+}
+
+canvas.addEventListener('pointermove', (ev) => {
+  pointerOnDiscPlane(ev);
+  notifyFirstGesture();
+});
+canvas.addEventListener('pointerdown', (ev) => {
+  pointerOnDiscPlane(ev);
+  notifyFirstGesture();
+  const dist = Math.hypot(pointer.x, pointer.y);
+  if (pointer.active && isPointerOnDisc(dist)) tapAt = clock.elapsedTime;
+});
+canvas.addEventListener('pointerleave', () => {
+  pointer.active = false;
+});
+
 function tick() {
   const dt = clock.getDelta();
   uniforms.uTime.value += dt;
   disc.rotation.z -= ROT_SPEED * dt;
+  applyDeform(clock.elapsedTime);
+  const st = getDeformState();
+  setAudioDeform(st.piega, st.schiaccia);
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
 }
