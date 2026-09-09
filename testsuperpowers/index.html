@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Vinile da laboratorio</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="errore-webgl" hidden>questo esperimento ha bisogno di un browser più recente</div>
+  <canvas id="stage"></canvas>
+  <p id="aiuto">
+    <span class="aiuto-wide">muovi per piegare · tocca per schiacciare</span>
+    <span class="aiuto-narrow">muovi · tocca</span>
+  </p>
+  <p id="nota-audio" hidden>audio non disponibile</p>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script type="module" src="vinile.js"></script>
+</body>
+</html>
