@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test audio-params</title>
+</head>
+<body>
+  <pre id="out">avvio…</pre>
+  <script type="module">
+    const out = document.getElementById('out');
+    const lines = [];
+    let failed = 0;
+    function assert(cond, msg) {
+      if (!cond) throw new Error(msg || 'assert');
+    }
+    function deepEqual(a, b) {
+      return JSON.stringify(a) === JSON.stringify(b);
+    }
+    async function run() {
+      try {
+        const { effectParams } = await import('../audio-params.js');
+        const tests = [
+          ['zero pulito', () => {
+            const p = effectParams(0, 0);
+            assert(p.distortion === 0);
+            assert(p.delay === 0);
+            assert(p.filterHz === 12000);
+            assert(p.glitchGain === 0);
+          }],
+          ['piega sporca', () => {
+            const p = effectParams(1, 0);
+            assert(p.distortion > 0.4);
+            assert(p.delay > 0.15);
+            assert(p.filterHz < 4000);
+            assert(p.glitchGain === 0);
+          }],
+          ['schiaccia glitch', () => {
+            const p = effectParams(0, 1);
+            assert(p.glitchGain > 0.6);
+            assert(p.distortion > 0.2);
+          }],
+          ['clamp', () => {
+            assert(deepEqual(effectParams(9, -2), effectParams(1, 0)));
+          }]
+        ];
+        for (const [name, fn] of tests) {
+          try {
+            fn();
+            lines.push('PASS ' + name);
+          } catch (e) {
+            failed += 1;
+            lines.push('FAIL ' + name + ': ' + e.message);
+          }
+        }
+      } catch (e) {
+        failed += 1;
+        lines.push('FAIL import: ' + e.message);
+      }
+      lines.push(failed ? 'DONE failed=' + failed : 'DONE failed=0');
+      out.textContent = lines.join('\n');
+    }
+    run();
+  </script>
+</body>
+</html>
