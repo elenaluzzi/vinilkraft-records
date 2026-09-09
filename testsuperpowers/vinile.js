@@ -56,22 +56,30 @@ const mat = new THREE.ShaderMaterial({
       vec2 p = vUv * 2.0 - 1.0;
       float r = length(p);
       if (r > 1.0 || r < 0.028) discard;
-      float grooves = 0.7 + 0.3 * sin(r * 28.0 + vLift * 6.0);
+      float grooves = 0.55 + 0.45 * sin(r * 36.0 + vLift * 8.0);
       float label = smoothstep(0.24, 0.14, r);
-      vec3 irid = vec3(
-        0.45 + 0.4 * sin(r * 6.0 + uTime * 0.6),
-        0.95 + 0.12 * sin(r * 4.0 - p.x * 2.0),
-        0.65 + 0.35 * sin(p.y * 4.0 + uTime * 0.4)
-      );
-      vec3 jelly = vec3(0.35, 1.0, 0.55);
-      vec3 labelCol = vec3(0.18, 0.7, 0.38);
-      vec3 col = mix(irid * 0.28 + jelly * 0.32 * grooves, labelCol, label * 0.4);
-      float rim = smoothstep(0.62, 1.0, r);
-      float alpha = mix(0.09, 0.26, rim);
-      alpha = mix(alpha, 0.18, label);
-      alpha += abs(vLift) * 0.18;
-      float edge = smoothstep(1.0, 0.88, r);
-      gl_FragColor = vec4(col, clamp(alpha, 0.05, 0.32) * edge);
+      vec3 base = vec3(0.08, 0.95, 0.18);
+      vec3 hot = vec3(0.55, 1.0, 0.05);
+      vec3 teal = vec3(0.0, 0.85, 0.75);
+      vec3 col = mix(base, hot, grooves);
+      col = mix(col, teal, 0.22 + 0.18 * sin(r * 8.0 + uTime));
+      col = mix(col, vec3(0.15, 1.0, 0.35), label * 0.65);
+      vec3 N = normalize(vec3(p.x * 0.55, 0.75 + vLift * 1.8, p.y * 0.55));
+      vec3 L = normalize(vec3(-0.35, 0.92, 0.45));
+      vec3 L2 = normalize(vec3(0.7, 0.55, -0.2));
+      vec3 V = normalize(vec3(0.1, 0.85, 0.55));
+      float spec = pow(max(dot(reflect(-L, N), V), 0.0), 22.0);
+      spec += pow(max(dot(reflect(-L2, N), V), 0.0), 14.0) * 0.7;
+      float fresnel = pow(1.0 - max(dot(N, V), 0.0), 2.0);
+      col = col * (0.85 + 0.4 * max(dot(N, L), 0.0));
+      col += vec3(1.0, 1.0, 0.95) * spec * 1.6;
+      col += vec3(0.3, 1.0, 0.45) * fresnel * 0.55;
+      float rim = smoothstep(0.55, 1.0, r);
+      float alpha = mix(0.28, 0.58, rim);
+      alpha = mix(alpha, 0.45, label);
+      alpha += spec * 0.3 + fresnel * 0.15;
+      float edge = smoothstep(1.0, 0.9, r);
+      gl_FragColor = vec4(col, clamp(alpha, 0.18, 0.78) * edge);
     }
   `
 });
