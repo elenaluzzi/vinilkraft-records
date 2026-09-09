@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test fisica</title>
+</head>
+<body>
+  <pre id="out">avvio…</pre>
+  <script type="module">
+    const out = document.getElementById('out');
+    const lines = [];
+    let failed = 0;
+    function assert(cond, msg) {
+      if (!cond) throw new Error(msg || 'assert');
+    }
+    async function run() {
+      try {
+        const m = await import('../fisica.js');
+        const {
+          BEND_RANGE, DISC_RADIUS, LABEL_RADIUS, SQUASH_DURATION,
+          pointerBendIntensity, vertexRigidity, isPointerOnDisc,
+          squashAmount, bendDirection
+        } = m;
+        const tests = [
+          ['piega 1 sopra il disco', () => {
+            assert(pointerBendIntensity(0) === 1);
+            assert(pointerBendIntensity(DISC_RADIUS) === 1);
+          }],
+          ['piega decade nella corona', () => {
+            const mid = (DISC_RADIUS + BEND_RANGE) / 2;
+            const v = pointerBendIntensity(mid);
+            assert(v > 0 && v < 1);
+            assert(pointerBendIntensity(BEND_RANGE) === 0);
+            assert(pointerBendIntensity(BEND_RANGE + 0.01) === 0);
+          }],
+          ['rigidità etichetta', () => {
+            assert(vertexRigidity(0) === 0);
+            assert(vertexRigidity(LABEL_RADIUS) === 0);
+            assert(vertexRigidity(DISC_RADIUS) > 0.99);
+          }],
+          ['hit disco', () => {
+            assert(isPointerOnDisc(DISC_RADIUS) === true);
+            assert(isPointerOnDisc(DISC_RADIUS + 0.01) === false);
+          }],
+          ['squash fuori durata', () => {
+            assert(squashAmount(-0.1) === 0);
+            assert(squashAmount(SQUASH_DURATION) === 0);
+            assert(squashAmount(SQUASH_DURATION + 1) === 0);
+          }],
+          ['squash alto poi scende', () => {
+            const a = squashAmount(0.05);
+            const b = squashAmount(1.5);
+            assert(a > 0.5, 'a=' + a);
+            assert(b < a);
+            assert(b > 0);
+          }],
+          ['direzione unitaria', () => {
+            const d = bendDirection(3, 4);
+            assert(Math.abs(d.x * d.x + d.y * d.y - 1) < 1e-6);
+            assert(Math.abs(d.x - 0.6) < 1e-6);
+          }],
+          ['direzione zero', () => {
+            const d = bendDirection(0, 0);
+            assert(d.x === 0 && d.y === 0);
+          }]
+        ];
+        for (const [name, fn] of tests) {
+          try {
+            fn();
+            lines.push('PASS ' + name);
+          } catch (e) {
+            failed += 1;
+            lines.push('FAIL ' + name + ': ' + e.message);
+          }
+        }
+      } catch (e) {
+        failed += 1;
+        lines.push('FAIL import: ' + e.message);
+      }
+      lines.push(failed ? 'DONE failed=' + failed : 'DONE failed=0');
+      out.textContent = lines.join('\n');
+    }
+    run();
+  </script>
+</body>
+</html>
