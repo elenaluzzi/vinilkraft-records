@@ -6,7 +6,6 @@ import {
   squashAmount,
   bendDirection
 } from './fisica.js';
-import { unlockAudio, setAudioDeform } from './audio.js';
 
 const canvas = document.getElementById('stage');
 const errore = document.getElementById('errore-webgl');
@@ -93,6 +92,9 @@ const pointer = { x: 0, y: 0, active: false };
 let tapAt = -999;
 let piega = 0;
 let schiaccia = 0;
+let piegaSm = 0;
+let dirSmX = 0;
+let dirSmY = 0;
 let firstGesture = false;
 
 export function getRotationY() {
@@ -107,7 +109,6 @@ export function notifyFirstGesture() {
   if (firstGesture) return;
   firstGesture = true;
   aiuto.hidden = true;
-  unlockAudio();
 }
 
 function pointerOnDiscPlane(ev) {
@@ -130,30 +131,36 @@ function pointerOnDiscPlane(ev) {
   pointer.active = true;
 }
 
-function applyDeform(now) {
+function applyDeform(now, dt) {
   const dist = Math.hypot(pointer.x, pointer.y);
-  piega = pointer.active ? pointerBendIntensity(dist) : 0;
+  const piegaTarget = pointer.active ? pointerBendIntensity(dist) : 0;
   schiaccia = squashAmount(now - tapAt);
   const dir = bendDirection(pointer.x, pointer.y);
+  const follow = 1 - Math.exp(-dt * 8);
+  piegaSm += (piegaTarget - piegaSm) * follow;
+  dirSmX += (dir.x - dirSmX) * follow;
+  dirSmY += (dir.y - dirSmY) * follow;
+  piega = piegaSm;
   const pos = geo.attributes.position;
   const arr = pos.array;
   const BEND_MAX = 0.42;
   const SQUASH_MAX = 0.5;
+  const DENT = 0.28;
   for (let i = 0; i < arr.length; i += 3) {
     const rx = rest[i];
     const ry = rest[i + 1];
     const rz = rest[i + 2];
     const vr = Math.hypot(rx, ry);
     const rigid = vertexRigidity(vr);
-    const pull = piega * rigid * BEND_MAX;
-    let x = rx + dir.x * pull;
-    let y = ry + dir.y * pull;
+    const pull = piegaSm * rigid * BEND_MAX;
+    let x = rx + dirSmX * pull;
+    let y = ry + dirSmY * pull;
     const scale = 1 - schiaccia * rigid * SQUASH_MAX;
     x *= scale;
     y *= scale;
     arr[i] = x;
     arr[i + 1] = y;
-    arr[i + 2] = rz;
+    arr[i + 2] = rz - schiaccia * rigid * DENT;
   }
   pos.needsUpdate = true;
 }
@@ -176,9 +183,7 @@ function tick() {
   const dt = clock.getDelta();
   uniforms.uTime.value += dt;
   disc.rotation.z -= ROT_SPEED * dt;
-  applyDeform(clock.elapsedTime);
-  const st = getDeformState();
-  setAudioDeform(st.piega, st.schiaccia);
+  applyDeform(clock.elapsedTime, dt);
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
 }
