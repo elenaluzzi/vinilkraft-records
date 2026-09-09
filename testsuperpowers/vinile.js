@@ -1,7 +1,6 @@
 import {
   DISC_RADIUS,
   pointerBendIntensity,
-  vertexRigidity,
   isPointerOnDisc,
   squashAmount,
   bendDirection
@@ -159,26 +158,25 @@ function applyDeform(now, dt) {
   piega = piegaSm;
   const pos = geo.attributes.position;
   const arr = pos.array;
-  const BEND_MAX = 0.5;
-  const SQUASH_MAX = 0.46;
-  const DENT = 0.38;
   for (let i = 0; i < arr.length; i += 3) {
     const rx = rest[i];
     const ry = rest[i + 1];
     const rz = rest[i + 2];
     const vr = Math.hypot(rx, ry);
-    const rigid = Math.pow(vertexRigidity(vr), 0.62);
-    const jelly = Math.sin(vr * 10 - now * 5.5) * 0.5 + Math.sin(vr * 17 + now * 3.2) * 0.5;
-    const pull = (piegaSm + wobble * 0.55) * rigid * BEND_MAX;
-    let x = rx + dirSmX * pull;
-    let y = ry + dirSmY * pull;
-    const scale = 1 - schiaccia * rigid * SQUASH_MAX * (1 + jelly * 0.12);
-    x *= scale;
-    y *= scale;
-    const wave = jelly * rigid * (0.045 + schiaccia * 0.22 + Math.abs(wobble) * 0.12);
-    arr[i] = x;
-    arr[i + 1] = y;
-    arr[i + 2] = rz - schiaccia * rigid * DENT + wave;
+    const rim = vr < 0.02 ? 0 : Math.pow(Math.min(1, vr / DISC_RADIUS), 5.5);
+    const nx = vr < 0.02 ? 0 : rx / vr;
+    const ny = vr < 0.02 ? 0 : ry / vr;
+    const angle = Math.atan2(ry, rx);
+    const facing = nx * dirSmX + ny * dirSmY;
+    const idle =
+      Math.sin(angle * 5 - now * 2.4) * 0.07 +
+      Math.sin(angle * 9 + now * 1.6) * 0.035;
+    const nearPointer = piegaSm * Math.max(0, facing) * 0.28;
+    const jiggle = wobble * Math.sin(angle * 4 - now * 5) * 0.1;
+    const squashZ = schiaccia * rim * 0.22;
+    arr[i] = rx;
+    arr[i + 1] = ry;
+    arr[i + 2] = rz + rim * (idle + nearPointer + jiggle) - squashZ;
   }
   pos.needsUpdate = true;
 }
