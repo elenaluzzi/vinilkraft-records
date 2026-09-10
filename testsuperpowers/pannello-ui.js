@@ -8,6 +8,12 @@ import {
   togglePad,
   isBlackKey
 } from './pannello.js';
+import {
+  createTapeState,
+  isRecLampOn,
+  tapRec,
+  tapNewTake
+} from './nastro.js';
 
 const PAD_LABELS = ['cassa', 'rullante', 'hi-hat', 'clap', 'tom', 'lab', 'aspro', 'rumore'];
 
@@ -34,6 +40,42 @@ export function mountPannello(root, handlers) {
   const whites = whiteCount();
   const padEls = [];
   const keyEls = new Map();
+  const tape = createTapeState();
+  const nastro = document.createElement('div');
+  nastro.id = 'nastro';
+  const spia = document.createElement('button');
+  spia.type = 'button';
+  spia.className = 'spia-rec';
+  spia.setAttribute('aria-label', 'registra');
+  const nuova = document.createElement('button');
+  nuova.type = 'button';
+  nuova.className = 'nuova-presa';
+  nuova.setAttribute('aria-label', 'nuova presa');
+  nastro.appendChild(spia);
+  nastro.appendChild(nuova);
+  padRow.appendChild(nastro);
+
+  function syncRecLamp() {
+    const on = isRecLampOn(tape);
+    spia.classList.toggle('acceso', on);
+    spia.setAttribute('aria-label', on ? 'registrazione' : 'registra');
+  }
+
+  spia.addEventListener('pointerdown', (ev) => {
+    ev.preventDefault();
+    handlers.onGesture();
+    const nowSec = handlers.nowSec ? handlers.nowSec() : 0;
+    const { action } = tapRec(tape, nowSec);
+    syncRecLamp();
+    handlers.onTapeAction(action, tape);
+  });
+  nuova.addEventListener('pointerdown', (ev) => {
+    ev.preventDefault();
+    handlers.onGesture();
+    tapNewTake(tape);
+    syncRecLamp();
+    handlers.onTapeAction('clear', tape);
+  });
 
   for (let i = 0; i < PAD_COUNT; i++) {
     const b = document.createElement('button');
@@ -103,7 +145,8 @@ export function mountPannello(root, handlers) {
   function syncLights() {
     padEls.forEach((el, i) => el.classList.toggle('acceso', state.pads[i]));
     keyEls.forEach((el, midi) => el.classList.toggle('acceso', !!state.keys[midi]));
+    syncRecLamp();
   }
 
-  return { state, syncLights };
+  return { state, tape, syncLights };
 }

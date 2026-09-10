@@ -6,6 +6,15 @@ import {
   bendDirection
 } from './fisica.js';
 import { mountPannello } from './pannello-ui.js';
+import { checkRecLimit, onPlayEnded } from './nastro.js';
+import {
+  unlockAudio,
+  setAudioDeform,
+  noteOn,
+  noteOff,
+  setPads,
+  triggerSquashClick
+} from './audio.js';
 
 const canvas = document.getElementById('stage');
 const errore = document.getElementById('errore-webgl');
@@ -132,11 +141,18 @@ export function notifyFirstGesture() {
   if (aiutoPannello) aiutoPannello.hidden = true;
 }
 
-mountPannello(document.getElementById('pannello'), {
-  onGesture: notifyFirstGesture,
-  onNoteOn() {},
-  onNoteOff() {},
-  onPadsChange() {}
+const mounted = mountPannello(document.getElementById('pannello'), {
+  onGesture() {
+    notifyFirstGesture();
+    unlockAudio();
+  },
+  onNoteOn(midi) { noteOn(midi); },
+  onNoteOff(midi) { noteOff(midi); },
+  onPadsChange(p) { setPads(p); },
+  nowSec() { return performance.now() / 1000; },
+  onTapeAction(action, tape) {
+    // Task 3 riempie startRec / stopRecAndPlay / play / clear
+  }
 });
 
 function pointerOnDiscPlane(ev) {
@@ -206,10 +222,12 @@ canvas.addEventListener('pointermove', (ev) => {
 canvas.addEventListener('pointerdown', (ev) => {
   pointerOnDiscPlane(ev);
   notifyFirstGesture();
+  unlockAudio();
   const dist = Math.hypot(pointer.x, pointer.y);
   if (pointer.active && isPointerOnDisc(dist)) {
     tapAt = clock.elapsedTime;
     wobbleVel += 2.4;
+    triggerSquashClick();
   }
 });
 canvas.addEventListener('pointerleave', () => {
@@ -221,6 +239,12 @@ function tick() {
   uniforms.uTime.value += dt;
   disc.rotation.z -= ROT_SPEED * dt;
   applyDeform(clock.elapsedTime, dt);
+  setAudioDeform(piega, schiaccia);
+  const recLimit = checkRecLimit(mounted.tape, performance.now() / 1000);
+  if (recLimit.action === 'stopRecAndPlay') {
+    mounted.syncLights();
+    // Task 3: stesso ramo stopRecAndPlay
+  }
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
 }
