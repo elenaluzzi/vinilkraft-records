@@ -212,13 +212,3 @@ A dark, futuristic single-page site for an electronic music festival. Features i
 - **Browser Compatibility:** Modern browsers (Chrome, Firefox, Edge, Safari). Web Audio API, WebGL (Three.js), and webcam APIs are required for the festival page features.
 - **No server required:** You can open `index.html` directly in a browser, though some browsers may block webcam/ESM CDN imports when using `file://` protocol. A simple local server (e.g., VS Code Live Server) is recommended for full functionality.
 
----
-
-## Superpowers Brainstorming Workflow
-
-When the user invokes the `brainstorming` skill from the Superpowers plugin, follow these user preferences:
-
-1. **Questions only** — Present clarifying questions one at a time to the user. Do not make decisions or assumptions on behalf of the user during the question phase.
-2. **Autonomous approval after questions** — Once the user has answered the clarifying questions, proceed autonomously: choose the recommended approach, approve all design sections, and advance through the design doc/spec workflow without asking for further explicit approvals.
-3. **No approval gates after questions** — Skip the "Human approves?" / "User approves design?" hard gates that normally follow the question phase. The user only wants to answer questions; after that, drive the process forward independently.
-4. **Write the spec and implementation plan** — After design approval (done autonomously), write the design doc to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`, self-review it, then invoke the `writing-plans` skill to create the implementation plan. Proceed to implementation.

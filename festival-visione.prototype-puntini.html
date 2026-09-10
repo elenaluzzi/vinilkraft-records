@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PROTOTIPO — Titolo Hero e Campo di puntini</title>
+  <!--
+    PROTOTIPO DA BUTTARE.
+    Tre varianti del rapporto Titolo Hero / Campo di puntini,
+    switchable via ?variant=, su una copia della homepage Vision Fest.
+  -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Syne:wght@800&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      color: #fff;
+      background: #0a0a14;
+      overflow-x: hidden;
+    }
+
+    #canvas-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(15px);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(255, 140, 42, 0.1);
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ff6a00;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    nav ul { list-style: none; display: flex; gap: 30px; }
+    nav ul a {
+      color: #aaa;
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 100px 20px 80px;
+    }
+
+    .hero-date {
+      font-size: 0.9rem;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: #ff6a00;
+      margin-bottom: 30px;
+    }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3rem, 10vw, 6rem);
+      font-weight: 800;
+      line-height: 0.95;
+      text-transform: uppercase;
+      letter-spacing: -2px;
+      margin-bottom: 25px;
+    }
+
+    .hero-line { display: block; }
+    .hero-line-accent {
+      background: linear-gradient(90deg, #ff6a00, #ff2d00, #ffcf4d, #ff6a00);
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: #ff6a00;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: #888;
+      max-width: 500px;
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .btn-fill {
+      padding: 16px 50px;
+      background: linear-gradient(135deg, #ff6a00, #ff2d00);
+      color: #fff;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* A — Sovrapposto: il campo è carta da parati, il titolo sta sopra */
+    .variant-a .hero-title {
+      text-shadow: 0 0 80px rgba(255, 106, 0, 0.3);
+      filter: drop-shadow(0 8px 28px rgba(10, 10, 20, 0.95));
+    }
+
+    /* B — Buca: il titolo vive dentro un bacino, data e bottone fuori */
+    .hero-well {
+      width: min(720px, 92vw);
+      padding: 48px 36px 40px;
+      border-radius: 50%;
+      background:
+        radial-gradient(ellipse at 50% 45%, rgba(10, 10, 20, 0.97) 0%, rgba(10, 10, 20, 0.92) 42%, rgba(10, 10, 20, 0) 72%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 0 10px;
+    }
+
+    .variant-b .hero-well .hero-title { margin-bottom: 0; }
+    .variant-b .hero-chrome { max-width: 520px; }
+
+    /* C — Diradamento: il testo sta in una radura; il campo si apre */
+    .hero-clearing {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 28px;
+    }
+
+    .variant-c .hero-title {
+      text-shadow: none;
+      filter: none;
+      margin-bottom: 18px;
+    }
+
+    .variant-c .hero-clearing p { margin-bottom: 0; }
+
+    .section {
+      padding: 80px 60px 140px;
+      position: relative;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      text-transform: uppercase;
+    }
+
+    .section-title span { color: #ff6a00; }
+
+    .artist { padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06); color: #ccc; }
+
+    #proto-state {
+      position: fixed;
+      top: 84px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #ffcf4d;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 6px 14px;
+      border: 1px dashed #ff6a00;
+      white-space: nowrap;
+    }
+
+    .proto-switcher {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 16px;
+      background: #f4f0e6;
+      color: #111;
+      border-radius: 999px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .proto-switcher button {
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 50%;
+      background: #111;
+      color: #f4f0e6;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .proto-switcher strong { min-width: 220px; text-align: center; }
+
+    @media (max-width: 768px) {
+      nav { padding: 15px 20px; }
+      nav ul { display: none; }
+      .section { padding: 60px 20px 140px; }
+      .proto-switcher strong { min-width: 140px; font-size: 0.75rem; }
+      #proto-state { font-size: 0.62rem; max-width: 92vw; white-space: normal; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas-bg"></canvas>
+
+  <nav>
+    <div class="logo">Vision Fest</div>
+    <ul>
+      <li><a href="#lineup">Lineup</a></li>
+      <li><a href="#info">Info</a></li>
+    </ul>
+  </nav>
+
+  <div id="proto-state"></div>
+  <div id="hero-host"></div>
+
+  <section class="section" id="lineup">
+    <div class="section-title">Line<span>up</span></div>
+    <div class="artist">Aphex Twin — Venerdì 18</div>
+    <div class="artist">Four Tet — Sabato 19</div>
+    <div class="artist">Floating Points — Domenica 20</div>
+  </section>
+
+  <div class="proto-switcher" role="navigation" aria-label="Varianti prototipo">
+    <button type="button" id="proto-prev" aria-label="Variante precedente">←</button>
+    <strong id="proto-label"></strong>
+    <button type="button" id="proto-next" aria-label="Variante successiva">→</button>
+  </div>
+
+  <script>
+    const VARIANTS = {
+      A: 'A (Sovrapposto)',
+      B: 'B (Buca)',
+      C: 'C (Diradamento)'
+    };
+    const KEYS = Object.keys(VARIANTS);
+
+    const dateHtml = '<p class="hero-date">18-20 Luglio 2026 / Milano</p>';
+    const titleHtml = '<h1 class="hero-title" aria-label="Vision Fest"><span class="hero-line">VISION</span><span class="hero-line hero-line-accent">FEST</span></h1>';
+    const copyHtml = '<p>Dove la musica elettronica incontra la cultura digitale. Tre giorni di suono, luce e visione.</p>';
+    const btnHtml = '<a class="btn-fill" href="#lineup">Acquista Biglietti</a>';
+
+    function markup(key) {
+      if (key === 'B') {
+        return `<section class="hero variant-b">
+          ${dateHtml}
+          <div class="hero-well">${titleHtml}</div>
+          <div class="hero-chrome">${copyHtml}${btnHtml}</div>
+        </section>`;
+      }
+      if (key === 'C') {
+        return `<section class="hero variant-c">
+          <div class="hero-clearing">
+            ${dateHtml}${titleHtml}${copyHtml}
+          </div>
+          ${btnHtml}
+        </section>`;
+      }
+      return `<section class="hero variant-a">
+        ${dateHtml}${titleHtml}${copyHtml}${btnHtml}
+      </section>`;
+    }
+
+    function currentKey() {
+      const raw = new URLSearchParams(location.search).get('variant') || 'A';
+      return VARIANTS[raw] ? raw : 'A';
+    }
+
+    function setVariant(key) {
+      const next = VARIANTS[key] ? key : 'A';
+      const url = new URL(location.href);
+      url.searchParams.set('variant', next);
+      history.replaceState({}, '', url);
+      document.getElementById('hero-host').innerHTML = markup(next);
+      document.body.dataset.variant = next;
+      document.getElementById('proto-label').textContent = VARIANTS[next];
+      const state = {
+        A: 'Campo intero sotto il Titolo Hero, nessuna buca.',
+        B: 'Titolo Hero dentro una buca scura; data e bottone fuori.',
+        C: 'Il Campo di puntini si apre dietro il blocco di testo.'
+      };
+      document.getElementById('proto-state').textContent = 'Stato: ' + VARIANTS[next] + ' — ' + state[next];
+    }
+
+    function step(dir) {
+      const i = KEYS.indexOf(currentKey());
+      setVariant(KEYS[(i + dir + KEYS.length) % KEYS.length]);
+    }
+
+    document.getElementById('proto-prev').onclick = () => step(-1);
+    document.getElementById('proto-next').onclick = () => step(1);
+    document.addEventListener('keydown', (e) => {
+      const tag = (e.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+      if (e.key === 'ArrowLeft') step(-1);
+      if (e.key === 'ArrowRight') step(1);
+    });
+
+    setVariant(currentKey());
+
+    const canvas = document.getElementById('canvas-bg');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    let time = 0;
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const cols = 40, rows = 25, spacing = 20, dots = [];
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        dots.push({
+          baseX: x * spacing - (cols * spacing) / 2,
+          baseY: y * spacing - (rows * spacing) / 2
+        });
+      }
+    }
+
+    function clearingFactor(px, py) {
+      if (document.body.dataset.variant !== 'C') return 1;
+      const box = document.querySelector('.hero-clearing') || document.querySelector('.hero-title');
+      if (!box) return 1;
+      const r = box.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const dx = (px - cx) / (r.width * 0.72);
+      const dy = (py - cy) / (r.height * 0.95);
+      const d = dx * dx + dy * dy;
+      if (d >= 1.15) return 1;
+      if (d <= 0.35) return 0;
+      return (d - 0.35) / 0.8;
+    }
+
+    function draw() {
+      ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
+      ctx.fillRect(0, 0, width, height);
+      time += 0.02;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      dots.forEach((dot) => {
+        const waveX = Math.sin(time + dot.baseY * 0.03) * 30;
+        const waveY = Math.cos(time * 0.7 + dot.baseX * 0.03) * 25;
+        const waveZ = Math.sin(time * 1.3 + dot.baseX * 0.02 + dot.baseY * 0.02) * 40;
+        const rotateY = Math.sin(time * 0.3) * 0.5;
+        const rx = dot.baseX * Math.cos(rotateY) - waveZ * Math.sin(rotateY);
+        const rz = dot.baseX * Math.sin(rotateY) + waveZ * Math.cos(rotateY);
+        const x = centerX + rx + waveX;
+        const y = centerY + dot.baseY + waveY;
+        const scale = 600 / (600 + rz);
+        const fade = clearingFactor(x, y);
+        if (fade <= 0.02) return;
+        const size = 3 * scale;
+        const alpha = (0.35 + scale * 0.4) * fade;
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 80, ${scale * 20}, ${alpha})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+</body>
+</html>
