@@ -6,6 +6,11 @@ import {
   PAD_COUNT,
   padShouldHit
 } from './pannello.js';
+import {
+  normalizeTheme,
+  voiceOf,
+  pitchedHz
+} from './tema-suono.js';
 
 const nota = document.getElementById('nota-audio');
 
@@ -39,6 +44,8 @@ let tapeBuffer = null;
 let tapeSource = null;
 let onTapeEnded = null;
 let pendingCapture = false;
+let theme = 'verde';
+let lastPitchDrop = 0;
 
 export function isAudioRunning() {
   return running;
@@ -69,6 +76,20 @@ function makeNoise(seconds) {
 
 function connectVoice(node) {
   node.connect(master);
+}
+
+export function setTheme(id) {
+  theme = normalizeTheme(id);
+  if (!running) return;
+  voices.forEach((v, midi) => applyVoiceSpec(v, midi));
+}
+
+function applyVoiceSpec(v, midi) {
+  const spec = voiceOf(theme);
+  v.o.type = spec.type;
+  v.o.detune.setTargetAtTime(spec.detune, ctx.currentTime, 0.02);
+  v.g.gain.setTargetAtTime(spec.gain, ctx.currentTime, 0.03);
+  v.o.frequency.setTargetAtTime(pitchedHz(midiHz(midi), lastPitchDrop), ctx.currentTime, 0.04);
 }
 
 function flushPending() {
@@ -254,12 +275,14 @@ export function noteOn(midi) {
     return;
   }
   if (voices.has(midi)) return;
+  const spec = voiceOf(theme);
   const o = ctx.createOscillator();
-  o.type = 'sawtooth';
-  o.frequency.value = midiHz(midi);
+  o.type = spec.type;
+  o.detune.value = spec.detune;
+  o.frequency.value = pitchedHz(midiHz(midi), lastPitchDrop);
   const g = ctx.createGain();
   g.gain.setValueAtTime(0, ctx.currentTime);
-  g.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 0.01);
+  g.gain.linearRampToValueAtTime(spec.gain, ctx.currentTime + spec.attack);
   o.connect(g);
   connectVoice(g);
   o.start();
@@ -271,11 +294,12 @@ export function noteOff(midi) {
   if (!running) return;
   const v = voices.get(midi);
   if (!v) return;
+  const spec = voiceOf(theme);
   const t = ctx.currentTime;
   v.g.gain.cancelScheduledValues(t);
   v.g.gain.setValueAtTime(Math.max(0.0008, v.g.gain.value), t);
-  v.g.gain.exponentialRampToValueAtTime(0.0008, t + 0.18);
-  v.o.stop(t + 0.2);
+  v.g.gain.exponentialRampToValueAtTime(0.0008, t + spec.release);
+  v.o.stop(t + spec.release + 0.02);
   voices.delete(midi);
 }
 
@@ -285,16 +309,20 @@ export function setPads(next) {
 
 export function setAudioDeform(piega, schiaccia) {
   if (!running) return;
-  const p = effectParams(piega, schiaccia);
+  const p = effectParams(piega, schiaccia, theme);
   distNode.curve = makeCurve(p.distortion);
   filter.frequency.setTargetAtTime(Math.max(280, p.filterHz), ctx.currentTime, 0.02);
   delayGain.gain.setTargetAtTime(p.delay, ctx.currentTime, 0.03);
-  delayNode.delayTime.setTargetAtTime(0.004 + p.glitchGain * 0.09, ctx.currentTime, 0.015);
+  delayNode.delayTime.setTargetAtTime(p.delayTime, ctx.currentTime, 0.015);
   glitchGain.gain.setTargetAtTime(p.glitchGain * 0.22, ctx.currentTime, 0.015);
   glitchFilter.frequency.setTargetAtTime(400 + p.glitchGain * 5200, ctx.currentTime, 0.02);
   dryGain.gain.setTargetAtTime(Math.max(0.05, p.dry - p.stutter), ctx.currentTime, 0.02);
   stutterDepth.gain.setTargetAtTime(p.stutter, ctx.currentTime, 0.02);
   stutterLfo.frequency.setTargetAtTime(14 + p.stutter * 36, ctx.currentTime, 0.04);
+  lastPitchDrop = p.pitchDrop;
+  voices.forEach((v, midi) => {
+    v.o.frequency.setTargetAtTime(pitchedHz(midiHz(midi), lastPitchDrop), ctx.currentTime, 0.05);
+  });
 }
 
 export function triggerSquashClick() {

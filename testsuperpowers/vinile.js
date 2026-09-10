@@ -10,6 +10,7 @@ import { mountPannello } from './pannello-ui.js';
 import { checkRecLimit, onPlayEnded } from './nastro.js';
 import {
   unlockAudio,
+  setTheme,
   setAudioDeform,
   noteOn,
   noteOff,
@@ -135,6 +136,7 @@ function applyTheme(id) {
   renderer.setClearColor(t.clear, 1);
   document.body.style.background = t.page;
   document.body.style.setProperty('--tema-rgb', t.keyRgb);
+  setTheme(id);
 }
 
 function mountTemi(root) {
