@@ -9,10 +9,16 @@ html, body {
   touch-action: none;
   user-select: none;
 }
+body {
+  display: flex;
+  flex-direction: column;
+}
 #stage {
   display: block;
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 #aiuto, #errore-webgl {
   position: fixed;
@@ -21,10 +27,85 @@ html, body {
   letter-spacing: 0.04em;
 }
 #aiuto {
+  top: 1.2rem;
   left: 1.2rem;
-  bottom: 1.2rem;
+  bottom: auto;
   font-size: 0.85rem;
   opacity: 0.75;
+}
+#aiuto-pannello, #nota-audio {
+  position: fixed;
+  z-index: 2;
+  pointer-events: none;
+  letter-spacing: 0.04em;
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+#aiuto-pannello {
+  left: 1.2rem;
+  bottom: calc(28vh + 0.4rem);
+}
+#nota-audio {
+  right: 1.2rem;
+  top: 1.2rem;
+}
+#aiuto-pannello[hidden], #nota-audio[hidden] {
+  display: none;
+}
+#pannello {
+  flex: 0 0 28vh;
+  min-height: 150px;
+  max-height: 260px;
+  z-index: 3;
+  padding: 0.45rem 0.6rem 0.55rem;
+  background: linear-gradient(#071208, #030503);
+  border-top: 1px solid #2cff6a44;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+#pad-row {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.35rem;
+  height: 32%;
+  min-height: 36px;
+}
+.pad, .tasto {
+  border: 1px solid #3dff7a55;
+  background: #071a0c;
+  box-shadow: 0 0 10px #39ff1422, inset 0 0 12px #39ff1428;
+  cursor: pointer;
+  touch-action: none;
+}
+.pad.acceso, .tasto.acceso {
+  background: #1c4a22;
+  box-shadow: 0 0 22px #7dff4a, inset 0 0 18px #b4ff50aa;
+  border-color: #b8ff9a;
+}
+#tastiera {
+  position: relative;
+  flex: 1;
+  min-height: 72px;
+  display: flex;
+}
+.tasto-bianco {
+  flex: 1;
+  height: 100%;
+  border-radius: 0 0 6px 6px;
+  z-index: 1;
+}
+.tasto-nero {
+  position: absolute;
+  top: 0;
+  width: 4.2%;
+  height: 58%;
+  background: #050a06;
+  z-index: 2;
+  border-radius: 0 0 4px 4px;
+}
+.tasto-nero.acceso {
+  background: #16331c;
 }
 #errore-webgl {
   inset: 0;
@@ -41,4 +122,12 @@ html, body {
 @media (max-width: 480px) {
   .aiuto-wide { display: none; }
   .aiuto-narrow { display: inline; }
+  #pannello {
+    flex-basis: 34vh;
+    min-height: 168px;
+  }
+  #aiuto-pannello {
+    bottom: calc(34vh + 0.3rem);
+    font-size: 0.7rem;
+  }
 }

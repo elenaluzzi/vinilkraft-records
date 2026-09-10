@@ -8,11 +8,17 @@
 </head>
 <body>
   <div id="errore-webgl" hidden>questo esperimento ha bisogno di un browser più recente</div>
-  <canvas id="stage"></canvas>
   <p id="aiuto">
     <span class="aiuto-wide">muovi per piegare · tocca per schiacciare</span>
     <span class="aiuto-narrow">muovi · tocca</span>
   </p>
+  <p id="aiuto-pannello">tieni i tasti · i pad restano accesi</p>
+  <p id="nota-audio" hidden>audio non disponibile</p>
+  <canvas id="stage"></canvas>
+  <div id="pannello">
+    <div id="pad-row"></div>
+    <div id="tastiera"></div>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script type="module" src="vinile.js"></script>
 </body>

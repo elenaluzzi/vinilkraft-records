@@ -5,10 +5,12 @@ import {
   squashAmount,
   bendDirection
 } from './fisica.js';
+import { mountPannello } from './pannello-ui.js';
 
 const canvas = document.getElementById('stage');
 const errore = document.getElementById('errore-webgl');
 const aiuto = document.getElementById('aiuto');
+const aiutoPannello = document.getElementById('aiuto-pannello');
 
 function showWebglError() {
   errore.hidden = false;
@@ -127,7 +129,15 @@ export function notifyFirstGesture() {
   if (firstGesture) return;
   firstGesture = true;
   aiuto.hidden = true;
+  if (aiutoPannello) aiutoPannello.hidden = true;
 }
+
+mountPannello(document.getElementById('pannello'), {
+  onGesture: notifyFirstGesture,
+  onNoteOn() {},
+  onNoteOff() {},
+  onPadsChange() {}
+});
 
 function pointerOnDiscPlane(ev) {
   const rect = canvas.getBoundingClientRect();
