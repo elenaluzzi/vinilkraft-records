@@ -3,7 +3,8 @@ import {
   pointerBendIntensity,
   isPointerOnDisc,
   squashAmount,
-  bendDirection
+  bendDirection,
+  vertexRigidity
 } from './fisica.js';
 import { mountPannello } from './pannello-ui.js';
 import { checkRecLimit, onPlayEnded } from './nastro.js';
@@ -20,6 +21,7 @@ import {
   clearTape,
   setTapeEndedHandler
 } from './audio.js';
+import { THEME_IDS, DEFAULT_THEME, themeOf } from './temi.js';
 
 const canvas = document.getElementById('stage');
 const errore = document.getElementById('errore-webgl');
@@ -47,7 +49,12 @@ camera.position.set(0, 2.35, 4.2);
 camera.lookAt(0, 0, 0);
 
 const uniforms = {
-  uTime: { value: 0 }
+  uTime: { value: 0 },
+  uBase: { value: new THREE.Vector3(0.08, 0.95, 0.18) },
+  uHot: { value: new THREE.Vector3(0.55, 1.0, 0.05) },
+  uAccent: { value: new THREE.Vector3(0.0, 0.85, 0.75) },
+  uLabel: { value: new THREE.Vector3(0.15, 1.0, 0.35) },
+  uFresnel: { value: new THREE.Vector3(0.3, 1.0, 0.45) }
 };
 
 const mat = new THREE.ShaderMaterial({
@@ -68,18 +75,20 @@ const mat = new THREE.ShaderMaterial({
     varying vec2 vUv;
     varying float vLift;
     uniform float uTime;
+    uniform vec3 uBase;
+    uniform vec3 uHot;
+    uniform vec3 uAccent;
+    uniform vec3 uLabel;
+    uniform vec3 uFresnel;
     void main() {
       vec2 p = vUv * 2.0 - 1.0;
       float r = length(p);
       if (r > 1.0 || r < 0.028) discard;
       float grooves = 0.55 + 0.45 * sin(r * 36.0 + vLift * 8.0);
       float label = smoothstep(0.24, 0.14, r);
-      vec3 base = vec3(0.08, 0.95, 0.18);
-      vec3 hot = vec3(0.55, 1.0, 0.05);
-      vec3 teal = vec3(0.0, 0.85, 0.75);
-      vec3 col = mix(base, hot, grooves);
-      col = mix(col, teal, 0.22 + 0.18 * sin(r * 8.0 + uTime));
-      col = mix(col, vec3(0.15, 1.0, 0.35), label * 0.65);
+      vec3 col = mix(uBase, uHot, grooves);
+      col = mix(col, uAccent, 0.22 + 0.18 * sin(r * 8.0 + uTime));
+      col = mix(col, uLabel, label * 0.65);
       vec3 N = normalize(vec3(p.x * 0.55, 0.75 + vLift * 1.8, p.y * 0.55));
       vec3 L = normalize(vec3(-0.35, 0.92, 0.45));
       vec3 L2 = normalize(vec3(0.7, 0.55, -0.2));
@@ -89,7 +98,7 @@ const mat = new THREE.ShaderMaterial({
       float fresnel = pow(1.0 - max(dot(N, V), 0.0), 2.0);
       col = col * (0.85 + 0.4 * max(dot(N, L), 0.0));
       col += vec3(1.0, 1.0, 0.95) * spec * 1.6;
-      col += vec3(0.3, 1.0, 0.45) * fresnel * 0.55;
+      col += uFresnel * fresnel * 0.55;
       float rim = smoothstep(0.55, 1.0, r);
       float alpha = mix(0.28, 0.58, rim);
       alpha = mix(alpha, 0.45, label);
@@ -115,6 +124,50 @@ function resize() {
 }
 window.addEventListener('resize', resize);
 resize();
+
+function applyTheme(id) {
+  const t = themeOf(id);
+  uniforms.uBase.value.fromArray(t.base);
+  uniforms.uHot.value.fromArray(t.hot);
+  uniforms.uAccent.value.fromArray(t.accent);
+  uniforms.uLabel.value.fromArray(t.labelCol);
+  uniforms.uFresnel.value.fromArray(t.fresnel);
+  renderer.setClearColor(t.clear, 1);
+  document.body.style.background = t.page;
+  document.body.style.setProperty('--tema-rgb', t.keyRgb);
+}
+
+function mountTemi(root) {
+  if (!root) return;
+  let current = DEFAULT_THEME;
+  try {
+    const saved = localStorage.getItem('vinile_tema');
+    if (saved) current = themeOf(saved).id;
+  } catch (e) {}
+  THEME_IDS.forEach((id) => {
+    const t = themeOf(id);
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tema-dot';
+    b.dataset.tema = id;
+    b.setAttribute('aria-label', t.label);
+    b.style.background = t.swatch;
+    if (id === current) b.classList.add('scelto');
+    b.addEventListener('pointerdown', (ev) => {
+      ev.preventDefault();
+      current = id;
+      applyTheme(id);
+      try { localStorage.setItem('vinile_tema', id); } catch (err) {}
+      root.querySelectorAll('.tema-dot').forEach((el) => {
+        el.classList.toggle('scelto', el === b);
+      });
+    });
+    root.appendChild(b);
+  });
+  applyTheme(current);
+}
+
+mountTemi(document.getElementById('temi'));
 
 const clock = new THREE.Clock();
 const ROT_SPEED = 0.38;
@@ -254,7 +307,8 @@ function tick() {
   uniforms.uTime.value += dt;
   disc.rotation.z -= ROT_SPEED * dt;
   applyDeform(clock.elapsedTime, dt);
-  setAudioDeform(piega, schiaccia);
+  const dist = Math.hypot(pointer.x, pointer.y);
+  setAudioDeform(piega * vertexRigidity(dist), schiaccia);
   const recLimit = checkRecLimit(mounted.tape, performance.now() / 1000);
   if (recLimit.action === 'stopRecAndPlay') {
     mounted.syncLights();
