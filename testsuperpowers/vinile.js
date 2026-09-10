@@ -93,10 +93,10 @@ disc.rotation.x = -Math.PI / 2.35;
 scene.add(disc);
 
 function resize() {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
+  const w = canvas.clientWidth || window.innerWidth;
+  const h = canvas.clientHeight || window.innerHeight;
   renderer.setSize(w, h, false);
-  camera.aspect = w / h;
+  camera.aspect = w / Math.max(h, 1);
   camera.updateProjectionMatrix();
 }
 window.addEventListener('resize', resize);
