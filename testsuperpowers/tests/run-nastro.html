@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test nastro</title>
+</head>
+<body>
+  <pre id="out">avvio…</pre>
+  <script type="module">
+    const out = document.getElementById('out');
+    const lines = [];
+    let failed = 0;
+    function assert(cond, msg) {
+      if (!cond) throw new Error(msg || 'assert');
+    }
+    async function run() {
+      try {
+        const m = await import('../nastro.js');
+        const {
+          MAX_REC_SEC,
+          IDLE,
+          RECORDING,
+          PLAYING,
+          createTapeState,
+          isRecLampOn,
+          tapRec,
+          tapNewTake,
+          checkRecLimit,
+          onPlayEnded
+        } = m;
+        const tests = [
+          ['tetto 60 s', () => {
+            assert(MAX_REC_SEC === 60);
+          }],
+          ['vuoto avvia rec, secondo tap stop+play, poi play, in play no-op', () => {
+            const s = createTapeState();
+            assert(s.mode === IDLE);
+            assert(isRecLampOn(s) === false);
+            assert(tapRec(s, 1).action === 'startRec');
+            assert(s.mode === RECORDING);
+            assert(isRecLampOn(s) === true);
+            assert(s.recStartedAt === 1);
+            assert(tapRec(s, 3).action === 'stopRecAndPlay');
+            assert(s.mode === PLAYING);
+            assert(s.hasTape === true);
+            assert(isRecLampOn(s) === false);
+            onPlayEnded(s);
+            assert(s.mode === IDLE);
+            assert(s.hasTape === true);
+            assert(tapRec(s, 10).action === 'play');
+            assert(s.mode === PLAYING);
+            assert(tapRec(s, 11).action === 'none');
+            assert(s.mode === PLAYING);
+          }],
+          ['cancella e idle, anche durante rec', () => {
+            const s = createTapeState();
+            tapRec(s, 0);
+            assert(tapNewTake(s).action === 'clear');
+            assert(s.mode === IDLE);
+            assert(s.hasTape === false);
+            assert(isRecLampOn(s) === false);
+          }],
+          ['a 60 s stop+play, prima no', () => {
+            const s = createTapeState();
+            tapRec(s, 5);
+            assert(checkRecLimit(s, 64.9).action === 'none');
+            assert(checkRecLimit(s, 65).action === 'stopRecAndPlay');
+            assert(s.mode === PLAYING);
+            assert(s.hasTape === true);
+          }]
+        ];
+        for (const [name, fn] of tests) {
+          try {
+            fn();
+            lines.push('PASS ' + name);
+          } catch (e) {
+            failed += 1;
+            lines.push('FAIL ' + name + ': ' + e.message);
+          }
+        }
+      } catch (e) {
+        failed += 1;
+        lines.push('FAIL import: ' + e.message);
+      }
+      lines.push(failed ? 'DONE failed=' + failed : 'DONE failed=0');
+      out.textContent = lines.join('\n');
+    }
+    run();
+  </script>
+</body>
+</html>
