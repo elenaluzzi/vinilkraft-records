@@ -13,7 +13,12 @@ import {
   noteOn,
   noteOff,
   setPads,
-  triggerSquashClick
+  triggerSquashClick,
+  startTapeCapture,
+  stopTapeCaptureAndPlay,
+  playTape,
+  clearTape,
+  setTapeEndedHandler
 } from './audio.js';
 
 const canvas = document.getElementById('stage');
@@ -141,6 +146,13 @@ export function notifyFirstGesture() {
   if (aiutoPannello) aiutoPannello.hidden = true;
 }
 
+function applyTapeAction(action) {
+  if (action === 'startRec') startTapeCapture();
+  else if (action === 'stopRecAndPlay') stopTapeCaptureAndPlay();
+  else if (action === 'play') playTape();
+  else if (action === 'clear') clearTape();
+}
+
 const mounted = mountPannello(document.getElementById('pannello'), {
   onGesture() {
     notifyFirstGesture();
@@ -150,9 +162,12 @@ const mounted = mountPannello(document.getElementById('pannello'), {
   onNoteOff(midi) { noteOff(midi); },
   onPadsChange(p) { setPads(p); },
   nowSec() { return performance.now() / 1000; },
-  onTapeAction(action, tape) {
-    // Task 3 riempie startRec / stopRecAndPlay / play / clear
-  }
+  onTapeAction(action) { applyTapeAction(action); }
+});
+
+setTapeEndedHandler(() => {
+  onPlayEnded(mounted.tape);
+  mounted.syncLights();
 });
 
 function pointerOnDiscPlane(ev) {
@@ -243,7 +258,7 @@ function tick() {
   const recLimit = checkRecLimit(mounted.tape, performance.now() / 1000);
   if (recLimit.action === 'stopRecAndPlay') {
     mounted.syncLights();
-    // Task 3: stesso ramo stopRecAndPlay
+    applyTapeAction('stopRecAndPlay');
   }
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
