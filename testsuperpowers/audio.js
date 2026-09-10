@@ -3,13 +3,16 @@ import {
   midiHz,
   BPM,
   SIXTEENTHS_PER_BAR,
-  PAD_COUNT,
-  padShouldHit
+  PAD_COUNT
 } from './pannello.js';
 import {
   normalizeTheme,
   voiceOf,
-  pitchedHz
+  pitchedHz,
+  padKind,
+  padShouldHitForTheme,
+  padHitRecipe,
+  padCarpetRecipe
 } from './tema-suono.js';
 
 const nota = document.getElementById('nota-audio');
@@ -28,6 +31,7 @@ let stutterDepth;
 let master;
 let voices = new Map();
 let pads = Array(PAD_COUNT).fill(false);
+let carpets = new Map();
 let noiseBuf;
 let nextSixteenth = 0;
 let step = 0;
@@ -82,6 +86,8 @@ export function setTheme(id) {
   theme = normalizeTheme(id);
   if (!running) return;
   voices.forEach((v, midi) => applyVoiceSpec(v, midi));
+  stopAllCarpets();
+  syncCarpets();
 }
 
 function applyVoiceSpec(v, midi) {
@@ -187,8 +193,11 @@ function sched() {
   const horizon = ctx.currentTime + 0.12;
   while (nextSixteenth < horizon) {
     for (let i = 0; i < PAD_COUNT; i++) {
-      if (pads[i] && padShouldHit(i, step)) hitPad(i, nextSixteenth);
+      if (pads[i] && padKind(theme, i) !== 'carpet' && padShouldHitForTheme(theme, i, step)) {
+        hitPad(i, nextSixteenth, step);
+      }
     }
+    if (step % SIXTEENTHS_PER_BAR === 0) pulseCarpets(nextSixteenth);
     nextSixteenth += dur;
     step = (step + 1) % SIXTEENTHS_PER_BAR;
   }
@@ -204,7 +213,52 @@ function envGain(t, peak, attack, decay) {
   return g;
 }
 
-function hitPad(i, t) {
+function hitPad(i, t, step) {
+  if (theme === 'verde') {
+    hitPadVerde(i, t);
+    return;
+  }
+  const rec = padHitRecipe(theme, i, step);
+  if (!rec) return;
+  playHit(rec, t);
+}
+
+function playHit(rec, t) {
+  if (rec.wave === 'sine' || rec.wave === 'triangle' || rec.wave === 'sawtooth') {
+    const o = ctx.createOscillator();
+    o.type = rec.wave;
+    const hz = pitchedHz(rec.freq, lastPitchDrop);
+    o.frequency.setValueAtTime(hz, t);
+    if (rec.freqEnd) o.frequency.exponentialRampToValueAtTime(pitchedHz(rec.freqEnd, lastPitchDrop), t + (rec.stop || 0.2));
+    o.connect(envGain(t, rec.peak, rec.attack, rec.decay));
+    o.start(t);
+    o.stop(t + rec.stop);
+    return;
+  }
+  const src = ctx.createBufferSource();
+  src.buffer = noiseBuf;
+  const bp = ctx.createBiquadFilter();
+  bp.type = rec.filter;
+  bp.frequency.value = rec.filterHz;
+  if (rec.q) bp.Q.value = rec.q;
+  src.connect(bp);
+  bp.connect(envGain(t, rec.peak, rec.attack, rec.decay));
+  src.start(t);
+  src.stop(t + rec.stop);
+  if (rec.clap) {
+    const src2 = ctx.createBufferSource();
+    src2.buffer = noiseBuf;
+    const bp2 = ctx.createBiquadFilter();
+    bp2.type = rec.filter;
+    bp2.frequency.value = rec.filterHz;
+    src2.connect(bp2);
+    bp2.connect(envGain(t + 0.04, rec.peak * 0.8, rec.attack, rec.decay * 0.85));
+    src2.start(t + 0.04);
+    src2.stop(t + rec.stop);
+  }
+}
+
+function hitPadVerde(i, t) {
   if (i === 0) {
     const o = ctx.createOscillator();
     o.type = 'sine';
@@ -269,6 +323,90 @@ function hitPad(i, t) {
   }
 }
 
+function startCarpet(i) {
+  const rec = padCarpetRecipe(theme, i);
+  if (!rec || carpets.has(i)) return;
+  const t = ctx.currentTime;
+  const nodes = [];
+  if (rec.noise) {
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuf;
+    src.loop = true;
+    const bp = ctx.createBiquadFilter();
+    bp.type = rec.filter;
+    bp.frequency.value = rec.filterHz;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(rec.peak, t + rec.attack);
+    src.connect(bp);
+    bp.connect(g);
+    connectVoice(g);
+    src.start(t);
+    nodes.push({ o: src, g, hz: rec.filterHz, noise: true });
+  } else {
+    (rec.freqs || []).forEach((hz) => {
+      const o = ctx.createOscillator();
+      o.type = rec.type;
+      o.frequency.value = pitchedHz(hz, lastPitchDrop);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(rec.peak, t + rec.attack);
+      o.connect(g);
+      connectVoice(g);
+      o.start();
+      nodes.push({ o, g, hz, noise: false });
+    });
+  }
+  carpets.set(i, { nodes, rec });
+}
+
+function stopCarpet(i) {
+  const c = carpets.get(i);
+  if (!c) return;
+  const t = ctx.currentTime;
+  c.nodes.forEach((n) => {
+    n.g.gain.cancelScheduledValues(t);
+    n.g.gain.setValueAtTime(Math.max(0.0008, n.g.gain.value), t);
+    n.g.gain.exponentialRampToValueAtTime(0.0008, t + 0.25);
+    try { n.o.stop(t + 0.28); } catch (e) {}
+  });
+  carpets.delete(i);
+}
+
+function stopAllCarpets() {
+  Array.from(carpets.keys()).forEach(stopCarpet);
+}
+
+function syncCarpets() {
+  if (!running) return;
+  for (let i = 0; i < PAD_COUNT; i++) {
+    const want = pads[i] && padKind(theme, i) === 'carpet';
+    if (want && !carpets.has(i)) startCarpet(i);
+    if (!want && carpets.has(i)) stopCarpet(i);
+  }
+}
+
+function pulseCarpets(t) {
+  carpets.forEach((c) => {
+    if (!c.rec.breathe) return;
+    c.nodes.forEach((n) => {
+      n.g.gain.cancelScheduledValues(t);
+      n.g.gain.setValueAtTime(c.rec.peak, t);
+      n.g.gain.linearRampToValueAtTime(c.rec.peak * 1.18, t + 0.06);
+      n.g.gain.linearRampToValueAtTime(c.rec.peak, t + 0.22);
+    });
+  });
+}
+
+function applyCarpetPitch() {
+  carpets.forEach((c) => {
+    c.nodes.forEach((n) => {
+      if (n.noise || !n.o.frequency) return;
+      n.o.frequency.setTargetAtTime(pitchedHz(n.hz, lastPitchDrop), ctx.currentTime, 0.05);
+    });
+  });
+}
+
 export function noteOn(midi) {
   if (!running) {
     if (pendingNotes.indexOf(midi) === -1) pendingNotes.push(midi);
@@ -305,6 +443,7 @@ export function noteOff(midi) {
 
 export function setPads(next) {
   pads = next.slice(0, PAD_COUNT);
+  syncCarpets();
 }
 
 export function setAudioDeform(piega, schiaccia) {
@@ -323,6 +462,7 @@ export function setAudioDeform(piega, schiaccia) {
   voices.forEach((v, midi) => {
     v.o.frequency.setTargetAtTime(pitchedHz(midiHz(midi), lastPitchDrop), ctx.currentTime, 0.05);
   });
+  applyCarpetPitch();
 }
 
 export function triggerSquashClick() {
