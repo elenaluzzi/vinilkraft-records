@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test tema-suono</title>
+</head>
+<body>
+  <pre id="out">avvio…</pre>
+  <script type="module">
+    const out = document.getElementById('out');
+    const lines = [];
+    let failed = 0;
+    function assert(cond, msg) {
+      if (!cond) throw new Error(msg || 'assert');
+    }
+    function deepEqual(a, b) {
+      return JSON.stringify(a) === JSON.stringify(b);
+    }
+    async function run() {
+      try {
+        const { PAD_STEPS } = await import('../pannello.js');
+        const m = await import('../tema-suono.js');
+        const {
+          normalizeTheme, voiceOf, padKind, padSteps, padShouldHitForTheme,
+          arpeggioHz, padHitRecipe, padCarpetRecipe, squashKind, pitchedHz
+        } = m;
+        const tests = [
+          ['normalize', () => {
+            assert(normalizeTheme('giallo') === 'giallo');
+            assert(normalizeTheme('nope') === 'verde');
+          }],
+          ['voci', () => {
+            assert(voiceOf('verde').type === 'sawtooth');
+            assert(voiceOf('giallo').type === 'sine');
+            assert(voiceOf('violetto').release > voiceOf('giallo').release);
+          }],
+          ['kind giallo/violetto', () => {
+            assert(padKind('giallo', 4) === 'rhythm');
+            assert(padKind('giallo', 5) === 'carpet');
+            assert(padKind('violetto', 4) === 'carpet');
+            assert(padKind('violetto', 7) === 'hit');
+          }],
+          ['steps verde', () => {
+            assert(deepEqual(padSteps('verde', 0), PAD_STEPS[0]));
+            assert(padShouldHitForTheme('verde', 0, 0) === true);
+          }],
+          ['squash e ricette', () => {
+            assert(squashKind('verde') === 'harsh');
+            assert(squashKind('giallo') === 'soft');
+            assert(padHitRecipe('giallo', 5, 0) === null);
+            assert(!!padCarpetRecipe('giallo', 5));
+            assert(pitchedHz(100, 1) < 70);
+            assert(arpeggioHz(2) > arpeggioHz(0));
+          }]
+        ];
+        tests.forEach(([name, fn]) => {
+          try { fn(); lines.push('ok  ' + name); }
+          catch (e) { failed++; lines.push('FAIL  ' + name + '  ' + e.message); }
+        });
+      } catch (e) {
+        failed++;
+        lines.push('FAIL  load  ' + e.message);
+      }
+      lines.push(failed ? ('falliti: ' + failed) : 'tutti ok');
+      out.textContent = lines.join('\n');
+    }
+    run();
+  </script>
+</body>
+</html>
