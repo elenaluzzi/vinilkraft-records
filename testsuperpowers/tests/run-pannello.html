@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test pannello</title>
+</head>
+<body>
+  <pre id="out">avvio…</pre>
+  <script type="module">
+    const out = document.getElementById('out');
+    const lines = [];
+    let failed = 0;
+    function assert(cond, msg) {
+      if (!cond) throw new Error(msg || 'assert');
+    }
+    async function run() {
+      try {
+        const m = await import('../pannello.js');
+        const {
+          LOW_MIDI, HIGH_MIDI, PAD_COUNT, BPM, SIXTEENTHS_PER_BAR,
+          midiHz, isBlackKey, createPanelState, pressKey, releaseKey,
+          heldMidis, togglePad, padOn, padShouldHit
+        } = m;
+        const tests = [
+          ['costanti due ottave e otto pad a 120', () => {
+            assert(LOW_MIDI === 48);
+            assert(HIGH_MIDI === 72);
+            assert(PAD_COUNT === 8);
+            assert(BPM === 120);
+            assert(SIXTEENTHS_PER_BAR === 16);
+          }],
+          ['A4 è 440', () => {
+            assert(Math.abs(midiHz(69) - 440) < 1e-6);
+          }],
+          ['Do e neri', () => {
+            assert(isBlackKey(48) === false);
+            assert(isBlackKey(49) === true);
+            assert(isBlackKey(50) === false);
+          }],
+          ['hold e release, ignora fuori range', () => {
+            const s = createPanelState();
+            pressKey(s, 48);
+            pressKey(s, 60);
+            pressKey(s, 47);
+            pressKey(s, 73);
+            assert(JSON.stringify(heldMidis(s)) === JSON.stringify([48, 60]));
+            releaseKey(s, 48);
+            assert(JSON.stringify(heldMidis(s)) === JSON.stringify([60]));
+            releaseKey(s, 60);
+            assert(JSON.stringify(heldMidis(s)) === JSON.stringify([]));
+          }],
+          ['toggle e più pad insieme', () => {
+            const s = createPanelState();
+            assert(togglePad(s, 0) === true);
+            assert(togglePad(s, 2) === true);
+            assert(padOn(s, 0) === true);
+            assert(padOn(s, 2) === true);
+            assert(togglePad(s, 0) === false);
+            assert(padOn(s, 0) === false);
+            assert(padOn(s, 2) === true);
+            assert(togglePad(s, -1) === false);
+            assert(togglePad(s, 8) === false);
+          }],
+          ['cassa sui quarti', () => {
+            assert(padShouldHit(0, 0) === true);
+            assert(padShouldHit(0, 4) === true);
+            assert(padShouldHit(0, 8) === true);
+            assert(padShouldHit(0, 12) === true);
+            assert(padShouldHit(0, 1) === false);
+          }],
+          ['wrap del sedicesimo e indice invalido', () => {
+            assert(padShouldHit(0, 16) === true);
+            assert(padShouldHit(9, 0) === false);
+          }]
+        ];
+        for (const [name, fn] of tests) {
+          try {
+            fn();
+            lines.push('PASS ' + name);
+          } catch (e) {
+            failed += 1;
+            lines.push('FAIL ' + name + ': ' + e.message);
+          }
+        }
+      } catch (e) {
+        failed += 1;
+        lines.push('FAIL import: ' + e.message);
+      }
+      lines.push(failed ? 'DONE failed=' + failed : 'DONE failed=0');
+      out.textContent = lines.join('\n');
+    }
+    run();
+  </script>
+</body>
+</html>
