@@ -20,27 +20,62 @@
       try {
         const { effectParams } = await import('../audio-params.js');
         const tests = [
-          ['zero pulito', () => {
+          ['a zero è pulito', () => {
             const p = effectParams(0, 0);
             assert(p.distortion === 0);
             assert(p.delay === 0);
             assert(p.filterHz === 12000);
             assert(p.glitchGain === 0);
+            assert(p.stutter === 0);
+            assert(p.dry === 1);
           }],
-          ['piega sporca', () => {
+          ['la piega glitcha i bordi, volume sempre pieno', () => {
             const p = effectParams(1, 0);
-            assert(p.distortion > 0.4);
-            assert(p.delay > 0.15);
-            assert(p.filterHz < 4000);
-            assert(p.glitchGain === 0);
+            const z = effectParams(0, 0);
+            assert(p.glitchGain > 0.85);
+            assert(p.stutter > 0.75);
+            assert(p.dry === 1);
+            assert(z.dry === 1);
+            assert(p.delay < 0.1);
+            assert(p.distortion > 0.6);
+            assert(p.filterHz < 5000);
           }],
-          ['schiaccia glitch', () => {
+          ['lo schiaccia accende il glitch', () => {
             const p = effectParams(0, 1);
             assert(p.glitchGain > 0.6);
             assert(p.distortion > 0.2);
           }],
-          ['clamp', () => {
+          ['clampa valori fuori range', () => {
             assert(deepEqual(effectParams(9, -2), effectParams(1, 0)));
+          }],
+          ['senza tema o verde: wow e pitchDrop a zero, delayTime dal glitch', () => {
+            const a = effectParams(1, 0);
+            const b = effectParams(1, 0, 'verde');
+            assert(a.wow === 0);
+            assert(a.pitchDrop === 0);
+            assert(b.glitchGain === a.glitchGain);
+            assert(a.delayTime > 0.05);
+          }],
+          ['giallo: niente glitch/stutter, c\'è wow', () => {
+            const p = effectParams(1, 0, 'giallo');
+            const z = effectParams(0, 0, 'giallo');
+            assert(p.glitchGain === 0);
+            assert(p.stutter === 0);
+            assert(p.dry === 1);
+            assert(p.wow > 0.5);
+            assert(p.pitchDrop === 0);
+            assert(p.distortion < 0.2);
+            assert(z.wow === 0);
+          }],
+          ['violetto: niente stutter, delay profondo e pitchDrop', () => {
+            const p = effectParams(1, 0, 'violetto');
+            const v = effectParams(1, 0, 'verde');
+            assert(p.stutter === 0);
+            assert(p.glitchGain === 0);
+            assert(p.delay > v.delay);
+            assert(p.delayTime > 0.3);
+            assert(p.pitchDrop > 0.7);
+            assert(p.wow === 0);
           }]
         ];
         for (const [name, fn] of tests) {
