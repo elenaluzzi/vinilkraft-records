@@ -174,6 +174,7 @@ export async function unlockAudio() {
       sched();
       if (nota) nota.hidden = true;
       flushPending();
+      syncCarpets();
       if (pendingCapture) startTapeCapture();
       return true;
     } catch (e) {
