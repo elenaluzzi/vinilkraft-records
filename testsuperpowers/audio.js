@@ -12,7 +12,8 @@ import {
   padKind,
   padShouldHitForTheme,
   padHitRecipe,
-  padCarpetRecipe
+  padCarpetRecipe,
+  squashKind
 } from './tema-suono.js';
 
 const nota = document.getElementById('nota-audio');
@@ -28,6 +29,8 @@ let glitchFilter;
 let dryGain;
 let stutterLfo;
 let stutterDepth;
+let wowLfo;
+let wowDepth;
 let master;
 let voices = new Map();
 let pads = Array(PAD_COUNT).fill(false);
@@ -155,6 +158,14 @@ export async function unlockAudio() {
       stutterLfo.connect(stutterDepth);
       stutterDepth.connect(dryGain.gain);
       stutterLfo.start();
+      wowLfo = ctx.createOscillator();
+      wowLfo.type = 'sine';
+      wowLfo.frequency.value = 0.55;
+      wowDepth = ctx.createGain();
+      wowDepth.gain.value = 0;
+      wowLfo.connect(wowDepth);
+      wowDepth.connect(filter.detune);
+      wowLfo.start();
       mix.connect(ctx.destination);
       recSink = ctx.createGain();
       recSink.gain.value = 0;
@@ -459,6 +470,7 @@ export function setAudioDeform(piega, schiaccia) {
   dryGain.gain.setTargetAtTime(Math.max(0.05, p.dry - p.stutter), ctx.currentTime, 0.02);
   stutterDepth.gain.setTargetAtTime(p.stutter, ctx.currentTime, 0.02);
   stutterLfo.frequency.setTargetAtTime(14 + p.stutter * 36, ctx.currentTime, 0.04);
+  if (wowDepth) wowDepth.gain.setTargetAtTime(p.wow * 48, ctx.currentTime, 0.05);
   lastPitchDrop = p.pitchDrop;
   voices.forEach((v, midi) => {
     v.o.frequency.setTargetAtTime(pitchedHz(midiHz(midi), lastPitchDrop), ctx.currentTime, 0.05);
@@ -472,6 +484,33 @@ export function triggerSquashClick() {
     return;
   }
   const t = ctx.currentTime;
+  const kind = squashKind(theme);
+  if (kind === 'soft') {
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuf;
+    const hp = ctx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 900;
+    src.connect(hp);
+    hp.connect(envGain(t, 0.2, 0.002, 0.08));
+    src.start(t);
+    src.stop(t + 0.1);
+    return;
+  }
+  if (kind === 'echo') {
+    [0, 0.12, 0.24].forEach((off, n) => {
+      const src = ctx.createBufferSource();
+      src.buffer = noiseBuf;
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = 700;
+      src.connect(bp);
+      bp.connect(envGain(t + off, 0.28 * (1 - n * 0.38), 0.002, 0.12));
+      src.start(t + off);
+      src.stop(t + off + 0.16);
+    });
+    return;
+  }
   const src = ctx.createBufferSource();
   src.buffer = noiseBuf;
   const hp = ctx.createBiquadFilter();
