@@ -294,14 +294,38 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 0;
+      gap: 16px;
+      padding: 16px 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      transition: padding 0.3s;
+      transition: padding 0.3s, border-color 0.3s;
     }
 
     .artist:hover {
-      padding-left: 15px;
+      padding-left: 12px;
       border-color: #ff6a00;
+    }
+
+    .artist-info {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .artist-photo {
+      width: 72px;
+      height: 72px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #111018;
+      border: 1px solid rgba(255, 106, 0, 0.28);
+      filter: grayscale(0.2) contrast(1.06);
+      transition: border-color 0.3s, filter 0.3s;
+    }
+
+    .artist:hover .artist-photo {
+      border-color: #ff6a00;
+      filter: none;
     }
 
     .artist-name {
@@ -1339,18 +1363,53 @@
 
     .photo-strip {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       justify-content: center;
       margin-top: 15px;
       flex-wrap: wrap;
-      max-height: 80px;
-      overflow: hidden;
+    }
+
+    .photo-strip-item {
+      position: relative;
+      flex-shrink: 0;
     }
 
     .photo-strip img {
+      display: block;
       height: 70px;
+      width: 70px;
       border: 1px solid rgba(255, 106, 0, 0.3);
       object-fit: cover;
+    }
+
+    .photo-delete {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border: none;
+      background: rgba(10, 10, 20, 0.88);
+      color: #ff6a00;
+      font-size: 16px;
+      line-height: 22px;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .photo-delete:hover {
+      background: #ff6a00;
+      color: #0a0a14;
+    }
+
+    .neur-clear {
+      background: transparent !important;
+      border: 1px solid rgba(255, 106, 0, 0.45) !important;
+      color: #ff6a00 !important;
+      margin-top: 10px;
+      padding: 8px 18px !important;
+      font-size: 0.68rem !important;
     }
 
     .neur-video-wrap video {
@@ -1377,6 +1436,7 @@
       .section { padding: 80px 20px; }
       .about-grid { grid-template-columns: 1fr; gap: 40px; }
       .artist-name { font-size: 1.2rem; }
+      .artist-photo { width: 56px; height: 56px; }
       .dash-header { flex-direction: column; gap: 20px; text-align: center; }
       .walls-card { height: 340px; }
     }
@@ -1414,69 +1474,96 @@
     <div class="lineup">
       <div class="day-label">Venerdì 18</div>
       <div class="artist">
-        <div>
-          <div class="artist-name">Aphex Twin</div>
-          <div class="artist-genre">IDM / Ambient</div>
+        <div class="artist-info">
+          <img class="artist-photo" src="img/artisti/aphex-twin.jpg" alt="Aphex Twin" width="72" height="72" loading="lazy">
+          <div>
+            <div class="artist-name">Aphex Twin</div>
+            <div class="artist-genre">IDM / Ambient</div>
+          </div>
         </div>
         <div class="artist-time">23:00</div>
       </div>
       <div class="artist">
-        <div>
-          <div class="artist-name">Charlotte de Witte</div>
-          <div class="artist-genre">Techno</div>
+        <div class="artist-info">
+          <img class="artist-photo" src="img/artisti/charlotte-de-witte.jpg" alt="Charlotte de Witte" width="72" height="72" loading="lazy">
+          <div>
+            <div class="artist-name">Charlotte de Witte</div>
+            <div class="artist-genre">Techno</div>
+          </div>
         </div>
         <div class="artist-time">01:00</div>
       </div>
       <div class="artist">
-        <div>
-          <div class="artist-name">Rival Consoles</div>
-          <div class="artist-genre">Electronica</div>
+        <div class="artist-info">
+          <img class="artist-photo" src="img/artisti/rival-consoles.jpg" alt="Rival Consoles" width="72" height="72" loading="lazy">
+          <div>
+            <div class="artist-name">Rival Consoles</div>
+            <div class="artist-genre">Electronica</div>
+          </div>
         </div>
         <div class="artist-time">21:00</div>
       </div>
 
       <div class="day-label">Sabato 19</div>
       <div class="artist">
-        <div>
-          <div class="artist-name">Jon Hopkins</div>
-          <div class="artist-genre">Ambient Techno</div>
+        <div class="artist-info">
+          <img class="artist-photo" src="img/artisti/jon-hopkins.jpg" alt="Jon Hopkins" width="72" height="72" loading="lazy">
+          <div>
+            <div class="artist-name">Jon Hopkins</div>
+            <div class="artist-genre">Ambient Techno</div>
+          </div>
         </div>
         <div class="artist-time">23:00</div>
       </div>
       <div class="artist">
-        <div>
-          <div class="artist-name">Amelie Lens</div>
-          <div class="artist-genre">Industrial Techno</div>
+        <div class="artist-info">
+          <img class="artist-photo" src="img/artisti/amelie-lens.jpg" alt="Amelie Lens" width="72" height="72" loading="lazy">
+          <div>
+            <div class="artist-name">Amelie Lens</div>
+            <div class="artist-genre">Industrial Techno</div>
+          </div>
         </div>
         <div class="artist-time">01:30</div>
       </div>
       <div class="artist">
-        <div>
-          <div class="artist-name">Floating Points</div>
-          <div class="artist-genre">Electronic / Jazz</div>
+        <div class="artist-info">
+          <img class="artist-photo" src="img/artisti/floating-points.jpg" alt="Floating Points" width="72" height="72" loading="lazy">
+          <div>
+            <div class="artist-name">Floating Points</div>
+            <div class="artist-genre">Electronic / Jazz</div>
+          </div>
         </div>
         <div class="artist-time">21:00</div>
       </div>
 
       <div class="day-label">Domenica 20</div>
       <div class="artist">
-        <div>
-          <div class="artist-name">Four Tet</div>
-          <div class="artist-genre">Electronic</div>
+        <div class="artist-info">
+          <img class="artist-photo" src="img/artisti/four-tet.jpg" alt="Four Tet" width="72" height="72" loading="lazy">
+          <div>
+            <div class="artist-name">Four Tet</div>
+            <div class="artist-genre">Electronic</div>
+          </div>
         </div>
         <div class="artist-time">22:00</div>
       </div>
       <div class="artist">
-        <div>
-          <div class="artist-name">Sara Landry</div>
-          <div class="artist-genre">Hard Techno</div>
+        <div class="artist-info">
+          <img class="artist-photo" src="img/artisti/sara-landry.jpg" alt="Sara Landry" width="72" height="72" loading="lazy">
+          <div>
+            <div class="artist-name">Sara Landry</div>
+            <div class="artist-genre">Hard Techno</div>
+          </div>
         </div>
         <div class="artist-time">00:30</div>
       </div>
       <div class="artist">
-        <div>
-          <div class="artist-name">objekt</div>
-          <div class="artist-genre">Experimental</div>
+        <div class="artist-info">
+          <img class="artist-photo" src="img/artisti/objekt.jpg" alt="objekt" width="72" height="72" loading="lazy">
+          <div>
+            <div class="artist-name">objekt</div>
+            <div class="artist-genre">Experimental</div>
+          </div>
         </div>
         <div class="artist-time">20:00</div>
       </div>
@@ -1669,6 +1756,7 @@
           <button class="neur-btn data-mosh-toggle" id="neur-effect-toggle" onclick="toggleEffectMode()" style="display:none;" title="Attiva/disattiva effetto Data Mosh VISION FEST">VISION FEST</button>
           <div class="neur-status" id="neur-status">In attesa di attivazione</div>
           <div class="photo-strip" id="photo-strip"></div>
+          <button class="neur-btn neur-clear" id="neur-clear-photos" onclick="clearPhotos()" style="display:none;">Cancella tutte</button>
         </div>
       </div>
     </div>
@@ -2424,7 +2512,11 @@
             document.getElementById('neur-snap').style.display = 'inline-block';
             document.getElementById('neur-effect-toggle').style.display = 'inline-block';
             neuralRunning = true;
-            setNeurStatus('Webcam attiva - pronto per lo scatto');
+            dataMoshActive = true;
+            const moshBtn = document.getElementById('neur-effect-toggle');
+            moshBtn.classList.add('active');
+            moshBtn.textContent = 'VISION FEST ON';
+            setNeurStatus('Webcam attiva - Data Mosh acceso');
           })
           .catch(function() {
             setNeurStatus('Accesso webcam negato o non disponibile');
@@ -2451,166 +2543,7 @@
       ctx.setTransform(1, 0, 0, 1, 0, 0);
 
       if (dataMoshActive) {
-        // === DATA MOSH VISION FEST — MODALITA PSICHEDELICA ===
-        const imgData = ctx.getImageData(0, 0, w, h);
-        const d = imgData.data;
-        const tempData = new Uint8ClampedArray(d);
-
-        // 1. CHROMATIC ABERRATION (scissione RGB)
-        for (let y = 0; y < h; y++) {
-          const rowStart = y * w * 4;
-          const shiftR = Math.floor(Math.sin(y * 0.05) * 8 + Math.random() * 6);
-          const shiftB = Math.floor(Math.cos(y * 0.05) * -8 - Math.random() * 6);
-          for (let x = 0; x < w; x++) {
-            const px = x * 4;
-            const rSrc = Math.min(w - 1, Math.max(0, x + shiftR));
-            const bSrc = Math.min(w - 1, Math.max(0, x + shiftB));
-            d[rowStart + px] = tempData[rowStart + rSrc * 4];     // R spostato
-            d[rowStart + px + 1] = tempData[rowStart + px + 1];  // G originale
-            d[rowStart + px + 2] = tempData[rowStart + bSrc * 4 + 2]; // B spostato
-          }
-        }
-
-        // 2. GLITCH BLOCKS (blocchi di pixel spostati violentemente)
-        const blockCount = 15 + Math.floor(Math.random() * 20);
-        for (let i = 0; i < blockCount; i++) {
-          const by = Math.floor(Math.random() * (h - 30));
-          const bh = 5 + Math.floor(Math.random() * 25);
-          const bx = Math.floor(Math.random() * (w - 40));
-          const bw = 10 + Math.floor(Math.random() * 80);
-          const shiftX = Math.floor((Math.random() - 0.5) * 120);
-          const shiftY = Math.floor((Math.random() - 0.5) * 60);
-
-          for (let y = by; y < Math.min(h, by + bh); y++) {
-            const rowStart = y * w * 4;
-            const srcY = Math.max(0, Math.min(h - 1, y + shiftY));
-            const srcRow = srcY * w * 4;
-            for (let x = bx; x < Math.min(w, bx + bw); x++) {
-              const srcX = Math.max(0, Math.min(w - 1, x + shiftX));
-              const px = x * 4;
-              const srcPx = srcX * 4;
-              d[rowStart + px] = tempData[srcRow + srcPx];
-              d[rowStart + px + 1] = tempData[srcRow + srcPx + 1];
-              d[rowStart + px + 2] = tempData[srcRow + srcPx + 2];
-            }
-          }
-        }
-
-        // 3. ROW SHUFFLE PSICHEDELICO (onde di distorsione)
-        for (let y = 0; y < h; y += 1) {
-          if (Math.random() < 0.25) {
-            const wave = Math.sin(y * 0.08) * 40 + Math.cos(y * 0.13) * 25;
-            const offset = Math.floor(wave + (Math.random() - 0.5) * 30);
-            const rowStart = y * w * 4;
-            const shifted = new Uint8ClampedArray(w * 4);
-            for (let x = 0; x < w; x++) {
-              const sx = ((x + offset) % w + w) % w;
-              shifted[x * 4] = d[rowStart + sx * 4];
-              shifted[x * 4 + 1] = d[rowStart + sx * 4 + 1];
-              shifted[x * 4 + 2] = d[rowStart + sx * 4 + 2];
-              shifted[x * 4 + 3] = d[rowStart + sx * 4 + 3];
-            }
-            for (let x = 0; x < w * 4; x++) d[rowStart + x] = shifted[x];
-          }
-        }
-
-        // 4. COLOR INVERSION + NEON GLOW su zone random
-        for (let y = 0; y < h; y += 2) {
-          if (Math.random() < 0.18) {
-            const rowStart = y * w * 4;
-            const invert = Math.random() > 0.5;
-            const hueShift = Math.floor(Math.random() * 360);
-            for (let x = 0; x < w * 4; x += 4) {
-              let r = d[rowStart + x];
-              let g = d[rowStart + x + 1];
-              let b = d[rowStart + x + 2];
-              if (invert) {
-                r = 255 - r;
-                g = 255 - g;
-                b = 255 - b;
-              }
-              // Saturazione esplosiva
-              const avg = (r + g + b) / 3;
-              r = Math.min(255, r * 1.8 - avg * 0.6 + 20);
-              g = Math.min(255, g * 1.4 - avg * 0.3 + (hueShift % 2 === 0 ? 40 : -20));
-              b = Math.min(255, b * 1.6 - avg * 0.4 + (hueShift % 3 === 0 ? 60 : -10));
-              d[rowStart + x] = r;
-              d[rowStart + x + 1] = g;
-              d[rowStart + x + 2] = b;
-            }
-          }
-        }
-
-        // 5. SCANLINE INTERFERENCE + VIBRATIONS
-        for (let y = 0; y < h - 2; y += 3) {
-          if (Math.random() < 0.4) {
-            const rowStart = y * w * 4;
-            const nextRow = (y + 1) * w * 4;
-            const nextNextRow = (y + 2) * w * 4;
-            for (let x = 0; x < w * 4; x += 4) {
-              // Media con righe adiacenti (effetto smear)
-              d[rowStart + x] = (d[rowStart + x] + d[nextRow + x]) / 2;
-              d[rowStart + x + 1] = (d[rowStart + x + 1] + d[nextNextRow + x + 1]) / 2;
-              d[rowStart + x + 2] = (d[rowStart + x + 2] + d[nextRow + x + 2] + d[nextNextRow + x + 2]) / 3;
-            }
-          }
-        }
-
-        // 6. PIXEL CORRUPTION INTENSA (noise psichedelico)
-        for (let i = 0; i < d.length; i += 4) {
-          const noise = Math.random();
-          if (noise < 0.02) {
-            // Pixel completamente random neon
-            d[i] = Math.random() > 0.5 ? 255 : Math.floor(Math.random() * 100);
-            d[i + 1] = Math.random() > 0.7 ? 255 : Math.floor(Math.random() * 80);
-            d[i + 2] = Math.random() > 0.6 ? 255 : Math.floor(Math.random() * 50);
-          } else if (noise < 0.05) {
-            // Satura al massimo
-            const max = Math.max(d[i], d[i + 1], d[i + 2]);
-            if (max > 150) {
-              d[i] = Math.min(255, d[i] * 1.5);
-              d[i + 1] = Math.min(255, d[i + 1] * 1.3);
-              d[i + 2] = Math.min(255, d[i + 2] * 1.4);
-            }
-          }
-        }
-
-        // 7. WAVE DISPLACEMENT VERTICALE
-        const waveData = new Uint8ClampedArray(d);
-        for (let y = 0; y < h; y++) {
-          const displacement = Math.floor(Math.sin(y * 0.02) * 15 + Math.sin(y * 0.07) * 8);
-          const targetY = Math.max(0, Math.min(h - 1, y + displacement));
-          const srcRow = y * w * 4;
-          const dstRow = targetY * w * 4;
-          if (displacement !== 0) {
-            for (let x = 0; x < w * 4; x++) {
-              d[dstRow + x] = (d[dstRow + x] * 0.3 + waveData[srcRow + x] * 0.7);
-            }
-          }
-        }
-
-        ctx.putImageData(imgData, 0, 0);
-
-        // 8. SCANLINE CRT + GLOW FINALE
-        ctx.globalCompositeOperation = 'screen';
-        for (let y = 0; y < h; y += 3) {
-          ctx.fillStyle = `rgba(255, ${50 + Math.random() * 100}, 0, ${0.02 + Math.random() * 0.03})`;
-          ctx.fillRect(0, y, w, 2);
-        }
-        ctx.globalCompositeOperation = 'source-over';
-
-        // Bordi vignetta psichedelica
-        const vignette = ctx.createRadialGradient(w / 2, h / 2, w * 0.3, w / 2, h / 2, w * 0.8);
-        vignette.addColorStop(0, 'rgba(255, 100, 0, 0)');
-        vignette.addColorStop(0.7, 'rgba(255, 50, 150, 0.08)');
-        vignette.addColorStop(1, 'rgba(100, 0, 255, 0.2)');
-        ctx.fillStyle = vignette;
-        ctx.fillRect(0, 0, w, h);
-
-        setNeurStatus('🔥 DATA MOSH PSICHEDELICO ATTIVO!');
-      } else {
-        // Foto normale
-        setNeurStatus('Scattata!');
+        applyDataMosh(ctx, w, h);
       }
 
       const dataURL = c.toDataURL('image/jpeg', 0.9);
@@ -2623,15 +2556,179 @@
       }, 3500);
 
       addPhotoToStrip(dataURL);
-      setNeurStatus('Scattata! Guarda sotto la preview');
+      setNeurStatus(dataMoshActive ? 'Foto Data Mosh salvata sotto' : 'Scattata! Guarda sotto');
     }
+
+    function applyDataMosh(ctx, w, h) {
+      const imgData = ctx.getImageData(0, 0, w, h);
+      const d = imgData.data;
+      const src = new Uint8ClampedArray(d);
+      const split = 22 + Math.floor(Math.random() * 18);
+
+      for (let y = 0; y < h; y++) {
+        const wobble = Math.floor(Math.sin(y * 0.045) * 18 + Math.cos(y * 0.09) * 8);
+        for (let x = 0; x < w; x++) {
+          const i = (y * w + x) * 4;
+          const xr = Math.max(0, Math.min(w - 1, x + split + wobble));
+          const xg = Math.max(0, Math.min(w - 1, x + Math.floor(wobble * 0.4)));
+          const xb = Math.max(0, Math.min(w - 1, x - split - wobble));
+          d[i] = src[(y * w + xr) * 4];
+          d[i + 1] = src[(y * w + xg) * 4 + 1];
+          d[i + 2] = src[(y * w + xb) * 4 + 2];
+        }
+      }
+
+      for (let i = 0; i < d.length; i += 4) {
+        let r = d[i];
+        let g = d[i + 1];
+        let b = d[i + 2];
+        const avg = (r + g + b) / 3;
+        r = Math.min(255, (r - avg) * 2.6 + avg + 38);
+        g = Math.min(255, (g - avg) * 2.2 + avg + 8);
+        b = Math.min(255, (b - avg) * 2.8 + avg + 48);
+        d[i] = Math.min(255, r * 1.18);
+        d[i + 1] = Math.min(255, g * 1.08);
+        d[i + 2] = Math.min(255, b * 1.22);
+      }
+
+      const afterColor = new Uint8ClampedArray(d);
+      const blocks = 28 + Math.floor(Math.random() * 18);
+      for (let n = 0; n < blocks; n++) {
+        const by = Math.floor(Math.random() * Math.max(1, h - 24));
+        const bh = 8 + Math.floor(Math.random() * 42);
+        const bx = Math.floor(Math.random() * Math.max(1, w - 30));
+        const bw = 24 + Math.floor(Math.random() * 140);
+        const shiftX = Math.floor((Math.random() - 0.5) * 180);
+        const shiftY = Math.floor((Math.random() - 0.5) * 90);
+        const mode = Math.random();
+        for (let y = by; y < Math.min(h, by + bh); y++) {
+          const srcY = Math.max(0, Math.min(h - 1, y + shiftY));
+          for (let x = bx; x < Math.min(w, bx + bw); x++) {
+            const srcX = Math.max(0, Math.min(w - 1, x + shiftX));
+            const i = (y * w + x) * 4;
+            const s = (srcY * w + srcX) * 4;
+            if (mode < 0.34) {
+              d[i] = afterColor[s];
+              d[i + 1] = afterColor[s + 2];
+              d[i + 2] = afterColor[s + 1];
+            } else if (mode < 0.67) {
+              d[i] = afterColor[s + 2];
+              d[i + 1] = afterColor[s];
+              d[i + 2] = afterColor[s + 1];
+            } else {
+              d[i] = afterColor[s];
+              d[i + 1] = afterColor[s + 1];
+              d[i + 2] = afterColor[s + 2];
+            }
+          }
+        }
+      }
+
+      for (let y = 0; y < h; y++) {
+        if (Math.random() > 0.38) continue;
+        const offset = Math.floor(Math.sin(y * 0.07) * 55 + (Math.random() - 0.5) * 50);
+        const row = y * w * 4;
+        const copy = d.slice(row, row + w * 4);
+        for (let x = 0; x < w; x++) {
+          const sx = ((x + offset) % w + w) % w;
+          d[row + x * 4] = copy[sx * 4];
+          d[row + x * 4 + 1] = copy[sx * 4 + 1];
+          d[row + x * 4 + 2] = copy[sx * 4 + 2];
+        }
+      }
+
+      for (let i = 0; i < d.length; i += 4) {
+        const n = Math.random();
+        if (n < 0.035) {
+          const pick = Math.random();
+          if (pick < 0.33) {
+            d[i] = 255; d[i + 1] = 40; d[i + 2] = 180;
+          } else if (pick < 0.66) {
+            d[i] = 0; d[i + 1] = 255; d[i + 2] = 230;
+          } else {
+            d[i] = 255; d[i + 1] = 106; d[i + 2] = 0;
+          }
+        } else if (n < 0.08) {
+          d[i] = Math.min(255, d[i] * 1.7);
+          d[i + 1] = Math.min(255, d[i + 1] * 0.55 + 40);
+          d[i + 2] = Math.min(255, d[i + 2] * 1.6 + 30);
+        }
+      }
+
+      ctx.putImageData(imgData, 0, 0);
+
+      ctx.globalCompositeOperation = 'screen';
+      ctx.fillStyle = 'rgba(255, 0, 170, 0.28)';
+      ctx.fillRect(-12, 0, w, h);
+      ctx.fillStyle = 'rgba(0, 230, 255, 0.22)';
+      ctx.fillRect(12, 0, w, h);
+      ctx.fillStyle = 'rgba(255, 106, 0, 0.2)';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.globalCompositeOperation = 'overlay';
+      ctx.fillStyle = 'rgba(255, 50, 200, 0.18)';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.globalCompositeOperation = 'screen';
+      for (let y = 0; y < h; y += 2) {
+        ctx.fillStyle = 'rgba(255, 90, 200, ' + (0.04 + Math.random() * 0.06) + ')';
+        ctx.fillRect(0, y, w, 1);
+      }
+
+      ctx.globalCompositeOperation = 'source-over';
+      const vignette = ctx.createRadialGradient(w / 2, h / 2, w * 0.22, w / 2, h / 2, w * 0.78);
+      vignette.addColorStop(0, 'rgba(255, 106, 0, 0)');
+      vignette.addColorStop(0.55, 'rgba(255, 0, 160, 0.12)');
+      vignette.addColorStop(1, 'rgba(40, 0, 90, 0.45)');
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    let photoSeq = 0;
 
     function addPhotoToStrip(url) {
       const strip = document.getElementById('photo-strip');
+      const id = ++photoSeq;
+      const item = document.createElement('div');
+      item.className = 'photo-strip-item';
+      item.setAttribute('data-photo-id', String(id));
+
       const img = document.createElement('img');
       img.src = url;
-      strip.prepend(img);
-      if (strip.children.length > 6) strip.removeChild(strip.lastChild);
+      img.alt = 'Foto Vision Fest';
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'photo-delete';
+      btn.setAttribute('aria-label', 'Cancella questa foto');
+      btn.textContent = '\u00d7';
+      btn.onclick = function() { deletePhoto(id); };
+
+      item.appendChild(img);
+      item.appendChild(btn);
+      strip.prepend(item);
+      updatePhotoActions();
+    }
+
+    function deletePhoto(id) {
+      const item = document.querySelector('.photo-strip-item[data-photo-id="' + id + '"]');
+      if (item) item.remove();
+      updatePhotoActions();
+      setNeurStatus('Foto cancellata');
+    }
+
+    function clearPhotos() {
+      const strip = document.getElementById('photo-strip');
+      if (strip) strip.innerHTML = '';
+      updatePhotoActions();
+      setNeurStatus('Tutte le foto cancellate');
+    }
+
+    function updatePhotoActions() {
+      const btn = document.getElementById('neur-clear-photos');
+      const strip = document.getElementById('photo-strip');
+      if (!btn || !strip) return;
+      btn.style.display = strip.children.length ? 'inline-block' : 'none';
     }
 
     function setNeurStatus(msg) {
