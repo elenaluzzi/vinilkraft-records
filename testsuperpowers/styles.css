@@ -265,3 +265,118 @@ body {
     font-size: 0.7rem;
   }
 }
+#pannello.rack-aperto {
+  flex-basis: 46vh;
+  max-height: 420px;
+}
+#aiuto-pannello.rack-spostato {
+  bottom: calc(46vh + 0.4rem);
+}
+#rack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  min-height: 0;
+  flex: 1 1 42%;
+  border: 1px solid rgba(var(--tema-rgb), 0.28);
+  background: linear-gradient(180deg, rgba(var(--tema-rgb), 0.08), #121416 55%);
+  padding: 0.28rem 0.35rem 0.32rem;
+}
+#rack[hidden] { display: none; }
+.rack-comandi {
+  display: flex;
+  gap: 0.45rem;
+  overflow: hidden;
+  height: 58%;
+  min-height: 72px;
+}
+.rack-gruppo {
+  flex: 1;
+  min-width: 0;
+  border-right: 1px solid rgba(196, 194, 188, 0.12);
+  padding-right: 0.3rem;
+}
+.rack-gruppo:last-child { border-right: 0; }
+.rack-gruppo-titolo {
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  color: rgba(var(--tema-rgb), 0.7);
+  margin-bottom: 0.2rem;
+}
+.rack-gruppo-row {
+  display: flex;
+  gap: 0.35rem;
+  height: calc(100% - 1.1rem);
+  align-items: stretch;
+}
+.rack-ctrl {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  font-size: 0.52rem;
+  color: rgba(196, 194, 188, 0.55);
+  flex: 1;
+}
+.rack-fader {
+  flex: 1;
+  width: 0.55rem;
+  min-height: 36px;
+  border: 1px solid rgba(196, 194, 188, 0.2);
+  background: #0c0e10;
+  position: relative;
+  cursor: ns-resize;
+}
+.rack-fader-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(var(--tema-rgb), 0.55);
+}
+.rack-knob {
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 50%;
+  border: 1px solid rgba(196, 194, 188, 0.25);
+  background: radial-gradient(circle at 35% 30%, #3a3e42, #16181a);
+  position: relative;
+  cursor: ns-resize;
+}
+.rack-knob-ago {
+  position: absolute;
+  left: 50%;
+  top: 12%;
+  width: 1px;
+  height: 38%;
+  background: rgba(var(--tema-rgb), 0.9);
+  transform-origin: bottom center;
+}
+.rack-grafico {
+  position: relative;
+  flex: 1;
+  min-height: 52px;
+  border: 1px solid rgba(196, 194, 188, 0.14);
+  background: #0a0c0e;
+}
+.rack-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.rack-titolo {
+  position: absolute;
+  right: 0.4rem;
+  top: 0.25rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: rgba(var(--tema-rgb), 0.55);
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  #rack { display: none !important; }
+  #pannello.rack-aperto {
+    flex-basis: 28vh;
+    max-height: 260px;
+  }
+}
