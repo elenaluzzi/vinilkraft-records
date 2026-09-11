@@ -59,8 +59,17 @@ const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
 camera.position.set(0, 2.35, 4.2);
 camera.lookAt(0, 0, 0);
 
+function colorFromHex(hex) {
+  return new THREE.Vector3(
+    ((hex >> 16) & 255) / 255,
+    ((hex >> 8) & 255) / 255,
+    (hex & 255) / 255
+  );
+}
+
 const uniforms = {
   uTime: { value: 0 },
+  uPage: { value: colorFromHex(0x050705) },
   uBase: { value: new THREE.Vector3(0.08, 0.95, 0.18) },
   uHot: { value: new THREE.Vector3(0.55, 1.0, 0.05) },
   uAccent: { value: new THREE.Vector3(0.0, 0.85, 0.75) },
@@ -86,6 +95,7 @@ const mat = new THREE.ShaderMaterial({
     varying vec2 vUv;
     varying float vLift;
     uniform float uTime;
+    uniform vec3 uPage;
     uniform vec3 uBase;
     uniform vec3 uHot;
     uniform vec3 uAccent;
@@ -94,7 +104,11 @@ const mat = new THREE.ShaderMaterial({
     void main() {
       vec2 p = vUv * 2.0 - 1.0;
       float r = length(p);
-      if (r > 1.0 || r < 0.028) discard;
+      if (r > 1.0) discard;
+      if (r < 0.028) {
+        gl_FragColor = vec4(uPage, 1.0);
+        return;
+      }
       float grooves = 0.55 + 0.45 * sin(r * 36.0 + vLift * 8.0);
       float label = smoothstep(0.24, 0.14, r);
       vec3 col = mix(uBase, uHot, grooves);
@@ -115,7 +129,8 @@ const mat = new THREE.ShaderMaterial({
       alpha = mix(alpha, 0.45, label);
       alpha += spec * 0.3 + fresnel * 0.15;
       float edge = smoothstep(1.0, 0.9, r);
-      gl_FragColor = vec4(col, clamp(alpha, 0.18, 0.78) * edge);
+      float a = clamp(alpha, 0.18, 0.78) * edge;
+      gl_FragColor = vec4(mix(uPage, col, a), edge);
     }
   `
 });
@@ -144,6 +159,7 @@ function applyTheme(id) {
   uniforms.uAccent.value.fromArray(t.accent);
   uniforms.uLabel.value.fromArray(t.labelCol);
   uniforms.uFresnel.value.fromArray(t.fresnel);
+  uniforms.uPage.value.copy(colorFromHex(t.clear));
   renderer.setClearColor(t.clear, 1);
   document.body.style.background = t.page;
   document.body.style.setProperty('--tema-rgb', t.keyRgb);
