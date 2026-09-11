@@ -376,6 +376,7 @@ function tick() {
     mounted.syncLights();
     applyTapeAction('stopRecAndPlay');
   }
+  if (mounted.syncTapeClock) mounted.syncTapeClock(performance.now() / 1000);
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
 }

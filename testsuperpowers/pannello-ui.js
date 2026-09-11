@@ -13,7 +13,9 @@ import {
   createTapeState,
   isRecLampOn,
   tapRec,
-  tapNewTake
+  tapNewTake,
+  formatTapeTime,
+  displayedTapeSec
 } from './nastro.js';
 import {
   PLUGIN_IDS,
@@ -50,22 +52,36 @@ export function mountPannello(root, handlers) {
   const tape = createTapeState();
   const nastro = document.createElement('div');
   nastro.id = 'nastro';
+  const recCol = document.createElement('div');
+  recCol.className = 'rec-col';
   const spia = document.createElement('button');
   spia.type = 'button';
   spia.className = 'spia-rec';
   spia.setAttribute('aria-label', 'registra');
+  const tempo = document.createElement('span');
+  tempo.className = 'tempo-nastro';
+  tempo.textContent = '0:00';
   const nuova = document.createElement('button');
   nuova.type = 'button';
   nuova.className = 'nuova-presa';
   nuova.setAttribute('aria-label', 'nuova presa');
-  nastro.appendChild(spia);
+  recCol.appendChild(spia);
+  recCol.appendChild(tempo);
+  nastro.appendChild(recCol);
   nastro.appendChild(nuova);
   padRow.appendChild(nastro);
+
+  function syncTapeClock(nowSec) {
+    const t = formatTapeTime(displayedTapeSec(tape, nowSec));
+    tempo.textContent = t;
+    const on = isRecLampOn(tape);
+    spia.setAttribute('aria-label', (on ? 'registrazione' : 'registra') + ' ' + t);
+  }
 
   function syncRecLamp() {
     const on = isRecLampOn(tape);
     spia.classList.toggle('acceso', on);
-    spia.setAttribute('aria-label', on ? 'registrazione' : 'registra');
+    syncTapeClock(handlers.nowSec ? handlers.nowSec() : 0);
   }
 
   spia.addEventListener('pointerdown', (ev) => {
@@ -186,5 +202,5 @@ export function mountPannello(root, handlers) {
     });
   }
 
-  return { state, tape, syncLights, setPluginOpen };
+  return { state, tape, syncLights, setPluginOpen, syncTapeClock };
 }
