@@ -53,9 +53,19 @@ let onTapeEnded = null;
 let pendingCapture = false;
 let theme = 'verde';
 let lastPitchDrop = 0;
+let meter;
+let meterBytes;
 
 export function isAudioRunning() {
   return running;
+}
+
+export function getMeterFrame() {
+  if (!running || !meter || !meterBytes) return new Float32Array(0);
+  meter.getByteTimeDomainData(meterBytes);
+  const out = new Float32Array(meterBytes.length);
+  for (let i = 0; i < meterBytes.length; i++) out[i] = (meterBytes[i] - 128) / 128;
+  return out;
 }
 
 export function setTapeEndedHandler(fn) {
@@ -167,6 +177,10 @@ export async function unlockAudio() {
       wowDepth.connect(filter.detune);
       wowLfo.start();
       mix.connect(ctx.destination);
+      meter = ctx.createAnalyser();
+      meter.fftSize = 256;
+      meterBytes = new Uint8Array(meter.fftSize);
+      mix.connect(meter);
       recSink = ctx.createGain();
       recSink.gain.value = 0;
       recNode = ctx.createScriptProcessor(2048, 1, 1);

@@ -20,9 +20,17 @@ import {
   stopTapeCaptureAndPlay,
   playTape,
   clearTape,
-  setTapeEndedHandler
+  setTapeEndedHandler,
+  getMeterFrame
 } from './audio.js';
 import { THEME_IDS, DEFAULT_THEME, themeOf } from './temi.js';
+import {
+  createRackState,
+  togglePlugin,
+  closePlugin,
+  isNarrowViewport
+} from './rack.js';
+import { mountRack } from './rack-ui.js';
 
 const canvas = document.getElementById('stage');
 const errore = document.getElementById('errore-webgl');
@@ -208,7 +216,33 @@ function applyTapeAction(action) {
   else if (action === 'clear') clearTape();
 }
 
-const mounted = mountPannello(document.getElementById('pannello'), {
+const rackState = createRackState(typeof localStorage !== 'undefined' ? localStorage : null);
+let rackUi = null;
+let mounted = null;
+
+function syncRackChrome() {
+  if (!mounted || !rackUi) return;
+  const open = rackState.open;
+  mounted.setPluginOpen(open);
+  rackUi.setOpen(open);
+  if (aiutoPannello) aiutoPannello.classList.toggle('rack-spostato', !!open);
+}
+
+function onPluginToggle(id) {
+  if (isNarrowViewport(window.innerWidth)) return;
+  togglePlugin(rackState, id);
+  syncRackChrome();
+}
+
+function onViewportChange() {
+  if (isNarrowViewport(window.innerWidth) && rackState.open) {
+    closePlugin(rackState);
+    syncRackChrome();
+  }
+}
+window.addEventListener('resize', onViewportChange);
+
+mounted = mountPannello(document.getElementById('pannello'), {
   onGesture() {
     notifyFirstGesture();
     unlockAudio();
@@ -217,8 +251,11 @@ const mounted = mountPannello(document.getElementById('pannello'), {
   onNoteOff(midi) { noteOff(midi); },
   onPadsChange(p) { setPads(p); },
   nowSec() { return performance.now() / 1000; },
-  onTapeAction(action) { applyTapeAction(action); }
+  onTapeAction(action) { applyTapeAction(action); },
+  onPluginToggle,
+  viewportWidth() { return window.innerWidth; }
 });
+rackUi = mountRack(document.getElementById('pannello'), rackState);
 
 setTapeEndedHandler(() => {
   onPlayEnded(mounted.tape);
@@ -311,6 +348,7 @@ function tick() {
   applyDeform(clock.elapsedTime, dt);
   const dist = Math.hypot(pointer.x, pointer.y);
   setAudioDeform(piega * vertexRigidity(dist), schiaccia);
+  if (rackState.open && rackUi) rackUi.draw(getMeterFrame());
   const recLimit = checkRecLimit(mounted.tape, performance.now() / 1000);
   if (recLimit.action === 'stopRecAndPlay') {
     mounted.syncLights();
