@@ -87,18 +87,18 @@ body {
   min-height: 150px;
   max-height: 260px;
   z-index: 3;
-  padding: 0.5rem 0.7rem 0.85rem;
-  background: linear-gradient(180deg, #07100a 0%, #030503 100%);
-  border-top: 1px solid rgba(var(--tema-rgb), 0.22);
-  box-shadow: 0 -18px 40px #00000088, inset 0 1px 0 rgba(var(--tema-rgb), 0.1);
+  padding: 0.45rem 0.55rem 0.7rem;
+  background: linear-gradient(180deg, #1c1e20 0%, #141618 55%, #101214 100%);
+  border-top: 1px solid rgba(196, 194, 188, 0.22);
+  box-shadow: 0 -10px 28px #00000099, inset 0 1px 0 rgba(220, 218, 210, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.42rem;
 }
 #pad-row {
   display: grid;
-  grid-template-columns: auto repeat(8, 1fr);
-  gap: 0.35rem;
+  grid-template-columns: auto repeat(8, 1fr) auto;
+  gap: 0.28rem;
   height: 32%;
   min-height: 36px;
   align-items: stretch;
@@ -109,12 +109,21 @@ body {
   height: 100%;
   align-items: center;
 }
-.spia-rec, .nuova-presa {
+#filtri {
+  display: grid;
+  grid-template-columns: repeat(4, 0.72fr);
+  gap: 0.18rem;
+  height: 100%;
+  min-width: 4.2rem;
+}
+.spia-rec, .nuova-presa, .pad, .tasto, .filtro {
   appearance: none;
   -webkit-appearance: none;
   cursor: pointer;
   touch-action: none;
   outline: none;
+}
+.spia-rec, .nuova-presa {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
@@ -126,94 +135,80 @@ body {
   border-radius: 50%;
   border: 1px solid rgba(255, 80, 70, 0.28);
   background: radial-gradient(circle at 35% 30%, rgba(90, 28, 24, 0.7), rgba(28, 8, 8, 0.96));
-  box-shadow:
-    inset 0 4px 6px rgba(255, 120, 100, 0.08),
-    0 2px 6px rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 2px 3px rgba(255, 120, 100, 0.08), 0 1px 3px rgba(0, 0, 0, 0.45);
 }
 .spia-rec.acceso {
   border-color: rgba(255, 160, 140, 0.7);
   background: radial-gradient(circle at 35% 30%, rgba(255, 90, 70, 0.95), rgba(120, 16, 12, 0.95));
-  box-shadow:
-    inset 0 0 8px rgba(255, 80, 60, 0.45),
-    0 0 10px rgba(255, 40, 30, 0.4);
+  box-shadow: inset 0 0 6px rgba(255, 80, 60, 0.45), 0 0 8px rgba(255, 40, 30, 0.35);
 }
 .nuova-presa {
   width: 1rem;
   height: 1rem;
   flex: 0 0 1rem;
-  border-radius: 3px;
-  border: 1px solid rgba(160, 255, 170, 0.12);
-  background: linear-gradient(180deg, rgba(40, 58, 46, 0.45), rgba(8, 12, 9, 0.96));
-  box-shadow: inset 0 4px 6px rgba(140, 255, 150, 0.04);
+  border-radius: 2px;
+  border: 1px solid rgba(196, 194, 188, 0.2);
+  background: linear-gradient(180deg, #2a2c2e, #1a1c1e);
+  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.06);
 }
-@media (max-width: 480px) {
-  .spia-rec { width: 1.35rem; height: 1.35rem; flex-basis: 1.35rem; }
-  .nuova-presa { width: 0.9rem; height: 0.9rem; flex-basis: 0.9rem; }
+.pad, .tasto, .filtro {
+  transition: background 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease, transform 0.08s ease;
 }
-.pad, .tasto {
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-  touch-action: none;
-  outline: none;
-  transition: background 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
-}
-.pad:focus-visible {
-  box-shadow: 0 0 0 1px rgba(var(--tema-rgb), 0.45);
-}
-.tasto:focus-visible {
-  box-shadow: 0 0 0 1px rgba(var(--tema-rgb), 0.45);
+.pad:focus-visible, .tasto:focus-visible, .filtro:focus-visible {
+  box-shadow: 0 0 0 1px rgba(196, 194, 188, 0.45);
 }
 .pad {
-  border: 1px solid rgba(var(--tema-rgb), 0.16);
-  border-radius: 4px;
-  background: linear-gradient(180deg, rgba(var(--tema-rgb), 0.22), rgba(8, 12, 9, 0.96));
+  border: 1px solid rgba(196, 194, 188, 0.16);
+  border-radius: 2px;
+  background: linear-gradient(180deg, #32363a 0%, #232628 100%);
   box-shadow:
-    inset 0 10px 16px rgba(var(--tema-rgb), 0.06),
-    inset 0 -8px 12px rgba(0, 0, 0, 0.45),
-    0 4px 10px rgba(0, 0, 0, 0.45);
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 -4px 6px rgba(0, 0, 0, 0.45),
+    0 1px 2px rgba(0, 0, 0, 0.4);
 }
 .pad.acceso {
-  border-color: rgba(var(--tema-rgb), 0.48);
-  background: linear-gradient(180deg, rgba(var(--tema-rgb), 0.32), rgba(12, 16, 12, 0.95));
+  border-color: rgba(var(--tema-rgb), 0.55);
+  background: linear-gradient(180deg, rgba(var(--tema-rgb), 0.28), #232628);
   box-shadow:
-    inset 0 0 18px rgba(var(--tema-rgb), 0.26),
-    0 0 14px rgba(var(--tema-rgb), 0.16);
+    inset 0 0 10px rgba(var(--tema-rgb), 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.filtro {
+  border: 1px solid rgba(196, 194, 188, 0.16);
+  border-radius: 2px;
+  background: linear-gradient(180deg, #2e3236 0%, #1e2022 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.filtro:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.55);
 }
 #tastiera {
   position: relative;
   flex: 1;
   min-height: 72px;
   display: flex;
-  border: 1px solid rgba(var(--tema-rgb), 0.28);
-  border-radius: 0 0 6px 6px;
-  box-shadow:
-    inset 0 0 0 1px rgba(var(--tema-rgb), 0.08),
-    0 0 12px rgba(var(--tema-rgb), 0.08);
+  border: 1px solid rgba(196, 194, 188, 0.2);
+  border-radius: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   overflow: hidden;
+  background: #121416;
 }
 .tasto-bianco {
   flex: 1;
   height: 100%;
   z-index: 1;
-  margin-right: 2px;
-  border: 1px solid rgba(var(--tema-rgb), 0.18);
-  border-radius: 0 0 5px 5px;
-  background: linear-gradient(180deg, rgba(var(--tema-rgb), 0.28), rgba(10, 12, 10, 0.94));
-  box-shadow:
-    inset 0 12px 18px rgba(var(--tema-rgb), 0.08),
-    inset 0 -14px 16px rgba(0, 0, 0, 0.35),
-    0 6px 14px rgba(0, 0, 0, 0.5);
+  margin-right: 1px;
+  border: 1px solid rgba(40, 40, 38, 0.55);
+  border-radius: 0 0 2px 2px;
+  background: linear-gradient(180deg, #d5d1c6 0%, #b8b3a6 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -8px 10px rgba(0, 0, 0, 0.12);
 }
-.tasto-bianco:last-child {
-  margin-right: 0;
-}
+.tasto-bianco:last-child { margin-right: 0; }
 .tasto-bianco.acceso {
-  border-color: rgba(var(--tema-rgb), 0.55);
-  background: linear-gradient(180deg, rgba(var(--tema-rgb), 0.38), rgba(12, 16, 12, 0.95));
-  box-shadow:
-    inset 0 0 22px rgba(var(--tema-rgb), 0.28),
-    0 0 16px rgba(var(--tema-rgb), 0.22);
+  border-color: rgba(var(--tema-rgb), 0.45);
+  background: linear-gradient(180deg, rgba(var(--tema-rgb), 0.22), #b8b3a6);
+  box-shadow: inset 0 0 12px rgba(var(--tema-rgb), 0.2);
 }
 .tasto-nero {
   position: absolute;
@@ -221,19 +216,20 @@ body {
   width: 4.2%;
   height: 58%;
   z-index: 2;
-  border: 1px solid rgba(var(--tema-rgb), 0.12);
-  border-radius: 0 0 3px 3px;
-  background: linear-gradient(180deg, rgba(8, 8, 10, 0.96), rgba(4, 4, 6, 0.98));
-  box-shadow:
-    inset 0 8px 12px rgba(var(--tema-rgb), 0.05),
-    0 5px 12px rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(0, 0, 0, 0.65);
+  border-radius: 0 0 2px 2px;
+  background: linear-gradient(180deg, #2a2a2c 0%, #111113 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 .tasto-nero.acceso {
-  border-color: rgba(var(--tema-rgb), 0.45);
-  background: linear-gradient(180deg, rgba(var(--tema-rgb), 0.22), rgba(8, 8, 10, 0.98));
-  box-shadow:
-    inset 0 0 14px rgba(var(--tema-rgb), 0.22),
-    0 0 12px rgba(var(--tema-rgb), 0.16);
+  border-color: rgba(var(--tema-rgb), 0.4);
+  background: linear-gradient(180deg, rgba(var(--tema-rgb), 0.2), #111113);
+  box-shadow: inset 0 0 8px rgba(var(--tema-rgb), 0.18);
+}
+@media (max-width: 480px) {
+  .spia-rec { width: 1.35rem; height: 1.35rem; flex-basis: 1.35rem; }
+  .nuova-presa { width: 0.9rem; height: 0.9rem; flex-basis: 0.9rem; }
+  #filtri { min-width: 3.4rem; gap: 0.12rem; }
 }
 #errore-webgl {
   inset: 0;
