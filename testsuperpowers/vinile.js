@@ -21,7 +21,8 @@ import {
   playTape,
   clearTape,
   setTapeEndedHandler,
-  getMeterFrame
+  getMeterFrame,
+  applyRack
 } from './audio.js';
 import { THEME_IDS, DEFAULT_THEME, themeOf } from './temi.js';
 import {
@@ -31,6 +32,7 @@ import {
   isNarrowViewport
 } from './rack.js';
 import { mountRack } from './rack-ui.js';
+import { creaPavimento } from './pavimento.js';
 
 const canvas = document.getElementById('stage');
 const errore = document.getElementById('errore-webgl');
@@ -122,6 +124,7 @@ const geo = new THREE.CircleGeometry(DISC_RADIUS, 160);
 const rest = Float32Array.from(geo.attributes.position.array);
 const disc = new THREE.Mesh(geo, mat);
 disc.rotation.x = -Math.PI / 2.35;
+scene.add(creaPavimento(THREE));
 scene.add(disc);
 
 function resize() {
@@ -216,7 +219,10 @@ function applyTapeAction(action) {
   else if (action === 'clear') clearTape();
 }
 
-const rackState = createRackState(typeof localStorage !== 'undefined' ? localStorage : null);
+const rackState = createRackState(
+  typeof localStorage !== 'undefined' ? localStorage : null,
+  applyRack
+);
 let rackUi = null;
 let mounted = null;
 
