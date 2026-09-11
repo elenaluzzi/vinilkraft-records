@@ -2,6 +2,7 @@ import {
   LOW_MIDI,
   HIGH_MIDI,
   PAD_COUNT,
+  FILTER_COUNT,
   createPanelState,
   pressKey,
   releaseKey,
@@ -93,6 +94,21 @@ export function mountPannello(root, handlers) {
     padRow.appendChild(b);
     padEls.push(b);
   }
+
+  const filtri = document.createElement('div');
+  filtri.id = 'filtri';
+  for (let i = 0; i < FILTER_COUNT; i++) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'filtro';
+    b.setAttribute('aria-label', 'filtro ' + (i + 1));
+    b.addEventListener('pointerdown', (ev) => {
+      ev.preventDefault();
+      handlers.onGesture();
+    });
+    filtri.appendChild(b);
+  }
+  padRow.appendChild(filtri);
 
   for (let midi = LOW_MIDI; midi <= HIGH_MIDI; midi++) {
     if (isBlackKey(midi)) continue;

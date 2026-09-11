@@ -4,6 +4,7 @@ import {
   LOW_MIDI,
   HIGH_MIDI,
   PAD_COUNT,
+  FILTER_COUNT,
   BPM,
   SIXTEENTHS_PER_BAR,
   midiHz,
@@ -22,6 +23,7 @@ describe('costanti', () => {
     assert.equal(LOW_MIDI, 48);
     assert.equal(HIGH_MIDI, 72);
     assert.equal(PAD_COUNT, 8);
+    assert.equal(FILTER_COUNT, 4);
     assert.equal(BPM, 120);
     assert.equal(SIXTEENTHS_PER_BAR, 16);
   });

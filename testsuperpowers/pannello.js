@@ -1,6 +1,7 @@
 export const LOW_MIDI = 48;
 export const HIGH_MIDI = 72;
 export const PAD_COUNT = 8;
+export const FILTER_COUNT = 4;
 export const BPM = 120;
 export const SIXTEENTHS_PER_BAR = 16;
 

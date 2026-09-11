@@ -16,8 +16,9 @@
     async function run() {
       try {
         const m = await import('../pannello.js');
+        const { mountPannello } = await import('../pannello-ui.js');
         const {
-          LOW_MIDI, HIGH_MIDI, PAD_COUNT, BPM, SIXTEENTHS_PER_BAR,
+          LOW_MIDI, HIGH_MIDI, PAD_COUNT, FILTER_COUNT, BPM, SIXTEENTHS_PER_BAR,
           midiHz, isBlackKey, createPanelState, pressKey, releaseKey,
           heldMidis, togglePad, padOn, padShouldHit
         } = m;
@@ -26,6 +27,7 @@
             assert(LOW_MIDI === 48);
             assert(HIGH_MIDI === 72);
             assert(PAD_COUNT === 8);
+            assert(FILTER_COUNT === 4);
             assert(BPM === 120);
             assert(SIXTEENTHS_PER_BAR === 16);
           }],
@@ -71,6 +73,19 @@
           ['wrap del sedicesimo e indice invalido', () => {
             assert(padShouldHit(0, 16) === true);
             assert(padShouldHit(9, 0) === false);
+          }],
+          ['quattro tasti filtro nel DOM', () => {
+            const root = document.createElement('div');
+            root.id = 'pannello';
+            root.innerHTML = '<div id="pad-row"></div><div id="tastiera"></div>';
+            mountPannello(root, {
+              onGesture: () => {},
+              onNoteOn: () => {},
+              onNoteOff: () => {},
+              onPadsChange: () => {},
+              onTapeAction: () => {}
+            });
+            assert(root.querySelectorAll('.filtro').length === 4);
           }]
         ];
         for (const [name, fn] of tests) {
