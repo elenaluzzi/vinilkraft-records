@@ -178,10 +178,20 @@ body {
   border-radius: 2px;
   background: linear-gradient(180deg, #2e3236 0%, #1e2022 100%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.35);
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+  color: rgba(196, 194, 188, 0.55);
+  font-family: "Segoe UI", system-ui, sans-serif;
 }
 .filtro:active {
   transform: translateY(1px);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.55);
+}
+.filtro.acceso {
+  border-color: rgba(var(--tema-rgb), 0.55);
+  background: linear-gradient(180deg, rgba(var(--tema-rgb), 0.28), #232628);
+  box-shadow: inset 0 0 10px rgba(var(--tema-rgb), 0.22);
+  color: rgba(255, 255, 255, 0.92);
 }
 #tastiera {
   position: relative;

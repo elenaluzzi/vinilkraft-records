@@ -85,7 +85,54 @@
               onPadsChange: () => {},
               onTapeAction: () => {}
             });
-            assert(root.querySelectorAll('.filtro').length === 4);
+            const btns = root.querySelectorAll('.filtro');
+            assert(btns.length === 4);
+            assert(btns[0].textContent === 'REV');
+            assert(btns[1].textContent === 'ECO');
+            assert(btns[2].textContent === 'EQ');
+            assert(btns[3].textContent === 'CMP');
+            assert(btns[0].getAttribute('aria-label') === 'riverbero');
+            assert(btns[1].getAttribute('aria-label') === 'eco');
+            assert(btns[2].getAttribute('aria-label') === 'equalizzatore');
+            assert(btns[3].getAttribute('aria-label') === 'compressore');
+            assert(btns[0].dataset.plugin === 'rev');
+          }],
+          ['toggle plugin su computer, silenzio sotto 700', () => {
+            const root = document.createElement('div');
+            root.id = 'pannello';
+            root.innerHTML = '<div id="pad-row"></div><div id="tastiera"></div>';
+            const seen = [];
+            const mounted = mountPannello(root, {
+              onGesture: () => {},
+              onNoteOn: () => { seen.push('note'); },
+              onNoteOff: () => {},
+              onPadsChange: () => { seen.push('pads'); },
+              onTapeAction: () => { seen.push('tape'); },
+              onPluginToggle: (id) => { seen.push(id); },
+              viewportWidth: () => 1280
+            });
+            const rev = root.querySelector('[data-plugin="rev"]');
+            rev.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+            assert(seen.indexOf('rev') !== -1);
+            assert(seen.indexOf('note') === -1);
+            assert(seen.indexOf('pads') === -1);
+            assert(seen.indexOf('tape') === -1);
+            mounted.setPluginOpen('rev');
+            assert(rev.classList.contains('acceso'));
+            const root2 = document.createElement('div');
+            root2.innerHTML = '<div id="pad-row"></div><div id="tastiera"></div>';
+            const seen2 = [];
+            mountPannello(root2, {
+              onGesture: () => {},
+              onNoteOn: () => {},
+              onNoteOff: () => {},
+              onPadsChange: () => {},
+              onTapeAction: () => {},
+              onPluginToggle: (id) => { seen2.push(id); },
+              viewportWidth: () => 699
+            });
+            root2.querySelector('[data-plugin="eq"]').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+            assert(seen2.length === 0);
           }]
         ];
         for (const [name, fn] of tests) {

@@ -15,6 +15,12 @@ import {
   tapRec,
   tapNewTake
 } from './nastro.js';
+import {
+  PLUGIN_IDS,
+  PLUGIN_LABELS,
+  PLUGIN_ARIA,
+  isNarrowViewport
+} from './rack.js';
 
 const PAD_LABELS = ['cassa', 'rullante', 'hi-hat', 'clap', 'tom', 'lab', 'aspro', 'rumore'];
 
@@ -97,16 +103,26 @@ export function mountPannello(root, handlers) {
 
   const filtri = document.createElement('div');
   filtri.id = 'filtri';
+  const filtroEls = [];
   for (let i = 0; i < FILTER_COUNT; i++) {
+    const id = PLUGIN_IDS[i];
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'filtro';
-    b.setAttribute('aria-label', 'filtro ' + (i + 1));
+    b.dataset.plugin = id;
+    b.textContent = PLUGIN_LABELS[id];
+    b.setAttribute('aria-label', PLUGIN_ARIA[id]);
     b.addEventListener('pointerdown', (ev) => {
       ev.preventDefault();
       handlers.onGesture();
+      const w = handlers.viewportWidth
+        ? handlers.viewportWidth()
+        : (typeof window !== 'undefined' ? window.innerWidth : 1280);
+      if (isNarrowViewport(w)) return;
+      if (handlers.onPluginToggle) handlers.onPluginToggle(id);
     });
     filtri.appendChild(b);
+    filtroEls.push(b);
   }
   padRow.appendChild(filtri);
 
@@ -164,5 +180,11 @@ export function mountPannello(root, handlers) {
     syncRecLamp();
   }
 
-  return { state, tape, syncLights };
+  function setPluginOpen(id) {
+    filtroEls.forEach((el) => {
+      el.classList.toggle('acceso', el.dataset.plugin === id);
+    });
+  }
+
+  return { state, tape, syncLights, setPluginOpen };
 }
