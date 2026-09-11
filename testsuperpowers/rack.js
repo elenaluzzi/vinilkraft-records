@@ -1,5 +1,6 @@
 export const NARROW_PX = 700;
 export const STORAGE_KEY = 'vinile_rack';
+export const PARAMS_VERSION = 2;
 export const PLUGIN_IDS = ['rev', 'eco', 'eq', 'cmp'];
 
 export const PLUGIN_LABELS = {
@@ -40,7 +41,8 @@ export const CONTROLS = {
     { id: 'medi', group: 'Bande', kind: 'fader' },
     { id: 'acuti', group: 'Bande', kind: 'fader' },
     { id: 'presenza', group: 'Timbro', kind: 'knob' },
-    { id: 'brillantezza', group: 'Timbro', kind: 'knob' }
+    { id: 'brillantezza', group: 'Timbro', kind: 'knob' },
+    { id: 'mix', group: 'Mix', kind: 'fader' }
   ],
   cmp: [
     { id: 'soglia', group: 'Dinamica', kind: 'knob' },
@@ -62,12 +64,20 @@ export function clamp01(n) {
   return x;
 }
 
+export function clampMix(n) {
+  const x = Number(n);
+  if (!Number.isFinite(x)) return 0;
+  if (x < 0) return 0;
+  if (x > 1) return 1;
+  return x;
+}
+
 export function defaultParams() {
   const o = {};
   PLUGIN_IDS.forEach((id) => {
     o[id] = {};
     CONTROLS[id].forEach((c) => {
-      o[id][c.id] = 0.5;
+      o[id][c.id] = c.id === 'mix' ? 0 : 0.5;
     });
   });
   return o;
@@ -87,7 +97,9 @@ export function parseParams(raw) {
     const src = data[id];
     if (!src || typeof src !== 'object') return;
     CONTROLS[id].forEach((c) => {
-      if (src[c.id] != null) base[id][c.id] = clamp01(src[c.id]);
+      if (src[c.id] != null) {
+        base[id][c.id] = c.id === 'mix' ? clampMix(src[c.id]) : clamp01(src[c.id]);
+      }
     });
   });
   return base;
@@ -96,7 +108,22 @@ export function parseParams(raw) {
 export function loadParams(storage) {
   try {
     const raw = storage && storage.getItem ? storage.getItem(STORAGE_KEY) : null;
-    return parseParams(raw);
+    const params = parseParams(raw);
+    let data = null;
+    if (raw != null && raw !== '') {
+      try {
+        data = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      } catch (e) {
+        data = null;
+      }
+    }
+    if (!data || data.v !== PARAMS_VERSION) {
+      PLUGIN_IDS.forEach((id) => {
+        params[id].mix = 0;
+      });
+      saveParams(storage, params);
+    }
+    return params;
   } catch (e) {
     return defaultParams();
   }
@@ -105,12 +132,25 @@ export function loadParams(storage) {
 export function saveParams(storage, params) {
   if (!storage || typeof storage.setItem !== 'function') return;
   try {
-    storage.setItem(STORAGE_KEY, JSON.stringify(params));
+    storage.setItem(STORAGE_KEY, JSON.stringify({
+      v: PARAMS_VERSION,
+      rev: params.rev,
+      eco: params.eco,
+      eq: params.eq,
+      cmp: params.cmp
+    }));
   } catch (e) {}
 }
 
-export function createRackState(storage) {
-  return { open: null, params: loadParams(storage), storage: storage || null };
+export function createRackState(storage, onParams) {
+  const state = {
+    open: null,
+    params: loadParams(storage),
+    storage: storage || null,
+    onParams: typeof onParams === 'function' ? onParams : null
+  };
+  if (state.onParams) state.onParams(state.params);
+  return state;
 }
 
 export function togglePlugin(state, id) {
@@ -128,8 +168,9 @@ export function setParam(state, pluginId, controlId, value) {
   if (!state.params[pluginId] || !Object.prototype.hasOwnProperty.call(state.params[pluginId], controlId)) {
     return 0.5;
   }
-  const v = clamp01(value);
+  const v = controlId === 'mix' ? clampMix(value) : clamp01(value);
   state.params[pluginId][controlId] = v;
   saveParams(state.storage, state.params);
+  if (state.onParams) state.onParams(state.params);
   return v;
 }
