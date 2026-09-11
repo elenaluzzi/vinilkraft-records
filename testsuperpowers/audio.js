@@ -15,6 +15,8 @@ import {
   padCarpetRecipe,
   squashKind
 } from './tema-suono.js';
+import { defaultParams } from './rack.js';
+import { dspEq, dspCmp, dspEco, dspRev } from './rack-dsp.js';
 
 const nota = document.getElementById('nota-audio');
 
@@ -55,6 +57,30 @@ let theme = 'verde';
 let lastPitchDrop = 0;
 let meter;
 let meterBytes;
+let lastRackParams = null;
+let rackIn;
+let rackOut;
+let eqLow;
+let eqMid;
+let eqHigh;
+let eqPres;
+let eqBrit;
+let eqMixDry;
+let eqMixWet;
+let cmpNode;
+let cmpMixDry;
+let cmpMixWet;
+let ecoDelay;
+let ecoFb;
+let ecoTone;
+let ecoMixDry;
+let ecoMixWet;
+let revInGain;
+let revDamp;
+let revConv;
+let revMixDry;
+let revMixWet;
+let lastRevKey = '';
 
 export function isAudioRunning() {
   return running;
@@ -121,6 +147,137 @@ function flushPending() {
   }
 }
 
+function makeRevImpulse(decaySec, dampHz) {
+  const sr = ctx.sampleRate;
+  const len = Math.max(1, Math.floor(sr * decaySec));
+  const buf = ctx.createBuffer(1, len, sr);
+  const d = buf.getChannelData(0);
+  const damp = Math.exp((-2 * Math.PI * dampHz) / sr);
+  let lp = 0;
+  for (let i = 0; i < len; i++) {
+    const env = Math.pow(1 - i / len, 1.6);
+    const n = (Math.random() * 2 - 1) * env;
+    lp = lp * damp + n * (1 - damp);
+    d[i] = lp;
+  }
+  return buf;
+}
+
+function wireRack() {
+  rackIn = ctx.createGain();
+  rackIn.gain.value = 1;
+  eqLow = ctx.createBiquadFilter();
+  eqLow.type = 'lowshelf';
+  eqLow.frequency.value = 120;
+  eqMid = ctx.createBiquadFilter();
+  eqMid.type = 'peaking';
+  eqMid.frequency.value = 800;
+  eqMid.Q.value = 1;
+  eqHigh = ctx.createBiquadFilter();
+  eqHigh.type = 'highshelf';
+  eqHigh.frequency.value = 4000;
+  eqPres = ctx.createBiquadFilter();
+  eqPres.type = 'peaking';
+  eqPres.frequency.value = 2500;
+  eqPres.Q.value = 1.2;
+  eqBrit = ctx.createBiquadFilter();
+  eqBrit.type = 'highshelf';
+  eqBrit.frequency.value = 8000;
+  eqMixDry = ctx.createGain();
+  eqMixWet = ctx.createGain();
+  const eqOut = ctx.createGain();
+  rackIn.connect(eqMixDry);
+  eqMixDry.connect(eqOut);
+  rackIn.connect(eqLow);
+  eqLow.connect(eqMid);
+  eqMid.connect(eqHigh);
+  eqHigh.connect(eqPres);
+  eqPres.connect(eqBrit);
+  eqBrit.connect(eqMixWet);
+  eqMixWet.connect(eqOut);
+
+  cmpNode = ctx.createDynamicsCompressor();
+  cmpMixDry = ctx.createGain();
+  cmpMixWet = ctx.createGain();
+  const cmpOut = ctx.createGain();
+  eqOut.connect(cmpMixDry);
+  cmpMixDry.connect(cmpOut);
+  eqOut.connect(cmpNode);
+  cmpNode.connect(cmpMixWet);
+  cmpMixWet.connect(cmpOut);
+
+  ecoDelay = ctx.createDelay(1.0);
+  ecoTone = ctx.createBiquadFilter();
+  ecoTone.type = 'lowpass';
+  ecoFb = ctx.createGain();
+  ecoMixDry = ctx.createGain();
+  ecoMixWet = ctx.createGain();
+  const ecoOut = ctx.createGain();
+  cmpOut.connect(ecoMixDry);
+  ecoMixDry.connect(ecoOut);
+  cmpOut.connect(ecoDelay);
+  ecoDelay.connect(ecoTone);
+  ecoTone.connect(ecoFb);
+  ecoFb.connect(ecoDelay);
+  ecoTone.connect(ecoMixWet);
+  ecoMixWet.connect(ecoOut);
+
+  revInGain = ctx.createGain();
+  revDamp = ctx.createBiquadFilter();
+  revDamp.type = 'lowpass';
+  revConv = ctx.createConvolver();
+  revMixDry = ctx.createGain();
+  revMixWet = ctx.createGain();
+  rackOut = ctx.createGain();
+  ecoOut.connect(revMixDry);
+  revMixDry.connect(rackOut);
+  ecoOut.connect(revInGain);
+  revInGain.connect(revDamp);
+  revDamp.connect(revConv);
+  revConv.connect(revMixWet);
+  revMixWet.connect(rackOut);
+  revConv.buffer = makeRevImpulse(0.7, 1800);
+  lastRevKey = '0.700:1800';
+}
+
+export function applyRack(params) {
+  if (params) lastRackParams = params;
+  const p = lastRackParams || defaultParams();
+  if (!running || !rackOut) return;
+  const eq = dspEq(p.eq);
+  eqMixWet.gain.setTargetAtTime(eq.wet, ctx.currentTime, 0.02);
+  eqMixDry.gain.setTargetAtTime(eq.dry, ctx.currentTime, 0.02);
+  eqLow.gain.setTargetAtTime(eq.graviDb, ctx.currentTime, 0.03);
+  eqMid.gain.setTargetAtTime(eq.mediDb, ctx.currentTime, 0.03);
+  eqHigh.gain.setTargetAtTime(eq.acutiDb, ctx.currentTime, 0.03);
+  eqPres.gain.setTargetAtTime(eq.presenzaDb, ctx.currentTime, 0.03);
+  eqBrit.gain.setTargetAtTime(eq.brillantezzaDb, ctx.currentTime, 0.03);
+  const cmp = dspCmp(p.cmp);
+  cmpMixWet.gain.setTargetAtTime(cmp.wet, ctx.currentTime, 0.02);
+  cmpMixDry.gain.setTargetAtTime(cmp.dry, ctx.currentTime, 0.02);
+  cmpNode.threshold.setTargetAtTime(cmp.thresholdDb, ctx.currentTime, 0.03);
+  cmpNode.ratio.setTargetAtTime(cmp.ratio, ctx.currentTime, 0.03);
+  cmpNode.attack.setTargetAtTime(cmp.attackSec, ctx.currentTime, 0.03);
+  cmpNode.knee.setTargetAtTime(cmp.knee, ctx.currentTime, 0.05);
+  cmpNode.release.setTargetAtTime(cmp.releaseSec, ctx.currentTime, 0.05);
+  const eco = dspEco(p.eco);
+  ecoMixWet.gain.setTargetAtTime(eco.wet, ctx.currentTime, 0.02);
+  ecoMixDry.gain.setTargetAtTime(eco.dry, ctx.currentTime, 0.02);
+  ecoDelay.delayTime.setTargetAtTime(eco.delaySec, ctx.currentTime, 0.04);
+  ecoFb.gain.setTargetAtTime(eco.feedback, ctx.currentTime, 0.04);
+  ecoTone.frequency.setTargetAtTime(eco.toneHz, ctx.currentTime, 0.05);
+  const rev = dspRev(p.rev);
+  revMixWet.gain.setTargetAtTime(rev.wet, ctx.currentTime, 0.03);
+  revMixDry.gain.setTargetAtTime(rev.dry, ctx.currentTime, 0.03);
+  revInGain.gain.setTargetAtTime(rev.inputGain, ctx.currentTime, 0.03);
+  revDamp.frequency.setTargetAtTime(rev.dampHz, ctx.currentTime, 0.05);
+  const key = rev.decaySec.toFixed(3) + ':' + rev.dampHz.toFixed(0);
+  if (rev.wet > 0 && key !== lastRevKey) {
+    lastRevKey = key;
+    revConv.buffer = makeRevImpulse(rev.decaySec, rev.dampHz);
+  }
+}
+
 export async function unlockAudio() {
   if (running) return true;
   if (unlocking) return unlocking;
@@ -176,15 +333,17 @@ export async function unlockAudio() {
       wowLfo.connect(wowDepth);
       wowDepth.connect(filter.detune);
       wowLfo.start();
-      mix.connect(ctx.destination);
+      wireRack();
+      mix.connect(rackIn);
+      rackOut.connect(ctx.destination);
       meter = ctx.createAnalyser();
       meter.fftSize = 256;
       meterBytes = new Uint8Array(meter.fftSize);
-      mix.connect(meter);
+      rackOut.connect(meter);
       recSink = ctx.createGain();
       recSink.gain.value = 0;
       recNode = ctx.createScriptProcessor(2048, 1, 1);
-      mix.connect(recNode);
+      rackOut.connect(recNode);
       recNode.connect(recSink);
       recSink.connect(ctx.destination);
       recNode.onaudioprocess = (ev) => {
@@ -194,6 +353,7 @@ export async function unlockAudio() {
       noiseBuf = makeNoise(1);
       await ctx.resume();
       running = true;
+      applyRack(lastRackParams || defaultParams());
       nextSixteenth = ctx.currentTime + 0.05;
       step = 0;
       sched();
